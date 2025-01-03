@@ -16,13 +16,7 @@ const config = {
         default: 'matter',
         matter: {
             gravity: { y: 1 },
-            debug: true, // comment this out to get rid of the extra physics 
-            setBounds: {
-                left: true,
-                right: true,
-                top: true,
-                bottom: true
-            }
+            // debug: true, // comment this out to get rid of the extra physics 
         }
     }
 };
@@ -40,16 +34,18 @@ function resizeGame() {
 let obstacles = [];
 const OBSTACLE_SPACING = 10;
 const OBSTACLE_RADIUS = Math.trunc(WIDTH / 240);
-const OBSTACLE_PAD = Math.trunc(HEIGHT / 19);
+const OBSTACLE_PAD = Math.ceil(HEIGHT / 18);
 const INIT_ROW_COUNT = 3;
 const FINAL_ROW_COUNT = 18;
 const OBSTACLE_START = {
     x: Math.trunc((WIDTH / 2) - OBSTACLE_PAD),
     y: Math.trunc(HEIGHT - (HEIGHT * 0.9))
 };
-console.log(`Obstacle Padding: ${OBSTACLE_PAD}, Obstacle Radius: ${OBSTACLE_RADIUS}`);
 
-const BALL_RADIUS = OBSTACLE_RADIUS*2;
+const BALL_RADIUS = OBSTACLE_RADIUS * 1.5;
+
+const CATEGORY_BALL = 1;
+const CATEGORY_OBSTACLE = 2;
 
 
 function preload() {
@@ -61,7 +57,7 @@ function create() {
     const graphics = this.add.graphics();
     graphics.fillStyle(0xffffff, 1); // White color
     graphics.fillCircle(OBSTACLE_RADIUS, OBSTACLE_RADIUS, OBSTACLE_RADIUS); // Draw circle at (20, 20) with radius 20
-    graphics.generateTexture('obstacle', OBSTACLE_RADIUS*2, OBSTACLE_RADIUS*2);
+    graphics.generateTexture('obstacle', OBSTACLE_RADIUS * 2, OBSTACLE_RADIUS * 2);
     graphics.destroy();
 
     let pos = OBSTACLE_START;
@@ -71,51 +67,44 @@ function create() {
             obstacle.setCircle(OBSTACLE_RADIUS);
             obstacle.setStatic(true);
             obstacle.setFriction(0.6);
-            obstacle.setBounce(0.4);
+            obstacle.setBounce(0);
+            obstacle.body.collisionFilter.category = CATEGORY_OBSTACLE;
+            obstacle.body.collisionFilter.mask = CATEGORY_BALL;
+
             obstacles.push(obstacle);
             pos.x += OBSTACLE_PAD;
         }
-        pos.x = WIDTH - pos.x + 0.5*OBSTACLE_PAD;
+        pos.x = WIDTH - pos.x + 0.5 * OBSTACLE_PAD;
         pos.y += OBSTACLE_PAD;
     }
 
 
-
-
-    // BALL
-    const ballGraphics = this.add.graphics();
-    ballGraphics.fillStyle(0xff0000, 1); // Red color
-    ballGraphics.fillCircle(BALL_RADIUS, BALL_RADIUS, BALL_RADIUS); // Draw circle at (20, 20) with radius 20
-    ballGraphics.generateTexture('ball', BALL_RADIUS*2, BALL_RADIUS*2);
-    ballGraphics.destroy();
-
-    const ball = this.matter.add.image(WIDTH / 2, 0, 'ball');
-    ball.setCircle(BALL_RADIUS);
-    ball.setBounce(0.8); // Make the ball bounce when it hits the obstacle
-    // const randomVelocityX = Phaser.Math.Between(-5, 5);
-    const randomVelocityY = Phaser.Math.Between(-5, 5);
-    ball.setVelocity(0, randomVelocityY);
-
-    // Add PLINKO text at the top center
+    // Add PLINKO text at the top left corner
     const textStyle = { font: '48px Impact', fill: '#ffffff', fontWeight: 'bold' };
-    const text = this.add.text(config.width / 2, 50, 'PLINKO', textStyle);
-    text.setOrigin(0.5, 0.5);
+    const text = this.add.text(10, 10, 'PLINKO', textStyle);
+    text.setOrigin(0, 0);
+    // Add Bet button
+    const betButton = this.add.text(10, 70, 'Bet', { font: '32px Arial', fill: '#00ff00' })
+        .setInteractive()
+        .on('pointerdown', () => {
+            // BALL
+            const ballGraphics = this.add.graphics();
+            ballGraphics.fillStyle(0xff0000, 1); // Red color
+            ballGraphics.fillCircle(BALL_RADIUS, BALL_RADIUS, BALL_RADIUS); // Draw circle at (20, 20) with radius 20
+            ballGraphics.generateTexture('ball', BALL_RADIUS * 2, BALL_RADIUS * 2);
+            ballGraphics.destroy();
+            const rand_x = Phaser.Math.Between(-20, 20);            
+            const ball = this.matter.add.image(WIDTH / 2 + rand_x, -10, 'ball');
+            ball.setCircle(BALL_RADIUS);
+            ball.setBounce(0.3);
+            ball.setDensity(10000);
+            ball.setMass(1000);
+            ball.body.collisionFilter.category = CATEGORY_BALL;
+            ball.body.collisionFilter.mask = CATEGORY_OBSTACLE;
+        });
 }
 
 function update() {
-    // Update logic goes here
-}
 
-// Trigger the animation for the obstacle when it is hit by the ball
-function triggerObstacleAnimation() {
-    // Animate obstacle (e.g., scale it up and then back down)
-    // this.tweens.add({
-    //     targets: obstacle,
-    //     scaleX: 1.5, // Increase width
-    //     scaleY: 1.5, // Increase height
-    //     duration: 300, // Duration of the animation
-    //     yoyo: true, // Shrink back after scaling up
-    //     repeat: 0, // Only run once
-    //     ease: 'Sine.easeInOut' // Smooth easing
-    // });
+
 }
