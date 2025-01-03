@@ -43,6 +43,7 @@ const OBSTACLE_START = {
     y: Math.trunc(HEIGHT - (HEIGHT * 0.9))
 };
 
+
 const BALL_RADIUS = OBSTACLE_RADIUS * 1.5;
 
 const CATEGORY_BALL = 1;
@@ -76,6 +77,10 @@ const MULTI_HEIGHT = OBSTACLE_PAD;
 const MULTI_COLLISION = HEIGHT - (MULTI_HEIGHT * 2)
 const MULTI_PAD = OBSTACLE_PAD;
 
+const maxSounds = 5; // Example: max 5 concurrent sounds
+let currentSounds = 0;
+
+
 function preload() {
     WebFont.load({
         custom: {
@@ -84,7 +89,7 @@ function preload() {
     });
     // Load sound effect
     this.load.audio('mouseClick', 'assets/audio/mouseClick.mp3');
-
+    this.load.audio('ballBounce', 'assets/audio/ballBounce.mp3');
 }
 
 function create() {
@@ -140,6 +145,10 @@ function create() {
         multi.setOnCollide((pair) => {
             const ball = pair.bodyA.gameObject === multi ? pair.bodyB.gameObject : pair.bodyA.gameObject;
             ball.destroy();
+            if (currentSounds < maxSounds) {
+                this.sound.play('ballBounce', { volume: 1.0, detune: Phaser.Math.Between(-100, 200) });
+                currentSounds++;
+            }
             const originalY = pos.y;
             const targetY = Math.min(multi.y + 10, originalY + 10);
             this.tweens.add({
@@ -151,6 +160,7 @@ function create() {
                 onComplete: () => {
                     multi.y = originalY;
                     scoreText.y = originalY;
+                    currentSounds = Math.max(0, currentSounds - 1);
                 }
             });
         });
