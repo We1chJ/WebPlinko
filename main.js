@@ -47,6 +47,7 @@ const BALL_RADIUS = OBSTACLE_RADIUS * 1.5;
 
 const CATEGORY_BALL = 1;
 const CATEGORY_OBSTACLE = 2;
+const CATEGORY_MULTI = 3;
 
 // RGB Values for multipliers
 const MULTI_CONFIG = {
@@ -70,7 +71,7 @@ const MULTI_CONFIG = {
 };
 
 const NUM_MULTIS = 17;
-const MULTI_WIDTH = OBSTACLE_PAD - OBSTACLE_RADIUS;
+const MULTI_WIDTH = OBSTACLE_PAD - OBSTACLE_RADIUS * 0.5;
 const MULTI_HEIGHT = OBSTACLE_PAD;
 const MULTI_COLLISION = HEIGHT - (MULTI_HEIGHT * 2)
 const MULTI_PAD = OBSTACLE_PAD;
@@ -117,10 +118,12 @@ function create() {
         const multiGraphics = this.add.graphics();
         multiGraphics.fillStyle(Phaser.Display.Color.GetColor(MULTI_CONFIG[i].color[0], MULTI_CONFIG[i].color[1], MULTI_CONFIG[i].color[2]), 1);
         multiGraphics.fillRoundedRect(0, 0, MULTI_WIDTH, MULTI_HEIGHT, 5);
+        multiGraphics.fillStyle(Phaser.Display.Color.GetColor(0, 0, 0), 0.5); // Shadow color with some transparency
+        multiGraphics.fillRoundedRect(0, MULTI_HEIGHT - 3, MULTI_WIDTH, 3, { tl: 0, tr: 0, bl: 5, br: 5 }); // Draw thicker shadow at the bottom
         multiGraphics.generateTexture(`multi${i}`, MULTI_WIDTH, MULTI_HEIGHT);
         multiGraphics.destroy();
         const multi = this.matter.add.image(pos.x, pos.y, `multi${i}`);
-        multi.setRectangle(MULTI_WIDTH, MULTI_HEIGHT, { chamfer: { radius: 5 } });
+        multi.setRectangle(MULTI_WIDTH, MULTI_HEIGHT + 10, { chamfer: { radius: 5 } });
         multi.setStatic(true);
 
         // Add black text with the score corresponding
@@ -129,6 +132,25 @@ function create() {
         scoreText.setOrigin(0.5, 0.5);
 
         pos.x += MULTI_PAD;
+        multi.setCollisionCategory(CATEGORY_MULTI);
+        multi.setCollidesWith(CATEGORY_BALL);
+        multi.setOnCollide((pair) => {
+            const ball = pair.bodyA.gameObject === multi ? pair.bodyB.gameObject : pair.bodyA.gameObject;
+            ball.destroy();
+            const originalY = pos.y;
+            const targetY = Math.min(multi.y + 10, originalY + 10);
+            this.tweens.add({
+                targets: [multi, scoreText],
+                y: targetY,
+                duration: 100,
+                yoyo: true,
+                ease: 'Power1',
+                onComplete: () => {
+                    multi.y = originalY;
+                    scoreText.y = originalY;
+                }
+            });
+        });
     }
 
 
