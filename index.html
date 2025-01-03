@@ -15,13 +15,34 @@
         canvas {
             display: block;
         }
+
+        @font-face {
+            font-family: 'plinko_m';
+            src: url('assets/fonts/plinko_m.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'plinko_bold';
+            src: url('assets/fonts/plinko_bold.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
     </style>
 </head>
 
 <body>
+    <!-- had to load this to load the font -->
+    <div style="font-family: plinko_bold; visibility: hidden">.</div> 
     <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
     <script src="node_modules/phaser/dist/phaser.js"></script>
     <script src="main.js"></script>
+    <style>
+        html, body {
+            overflow: hidden;
+        }
+    </style>
 </body>
 
 </html>

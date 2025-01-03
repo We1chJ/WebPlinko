@@ -78,10 +78,13 @@ const MULTI_PAD = OBSTACLE_PAD;
 
 function preload() {
     WebFont.load({
-        google: {
-            families: ['Roboto']
+        custom: {
+            families: ['plinko_bold', 'plinko_m'], // Add all font-family names here
         }
     });
+    // Load sound effect
+    this.load.audio('mouseClick', 'assets/audio/mouseClick.mp3');
+
 }
 
 function create() {
@@ -128,7 +131,7 @@ function create() {
 
         // Add black text with the score corresponding
         const multiplierText = MULTI_CONFIG[i].multiplier >= 100 ? `${MULTI_CONFIG[i].multiplier}` : `${MULTI_CONFIG[i].multiplier}x`;
-        const scoreText = this.add.text(pos.x, pos.y, multiplierText, { font: '15px "Roboto", sans-serif', fill: '#000000', fontWeight: 'bold' });
+        const scoreText = this.add.text(pos.x, pos.y, multiplierText, { font: '15px plinko_bold', fill: '#000000', fontWeight: 'bold' });
         scoreText.setOrigin(0.5, 0.5);
 
         pos.x += MULTI_PAD;
@@ -153,19 +156,21 @@ function create() {
         });
     }
 
-
     // Add PLINKO text at the top left corner
-    const textStyle = { font: '48px Impact', fill: '#ffffff', fontWeight: 'bold' };
+    const textStyle = { font: '48px "plinko_bold", sans-serif', fill: '#ffffff', fontWeight: 'bold' };
     const text = this.add.text(10, 10, 'PLINKO', textStyle);
     text.setOrigin(0, 0);
     // Add Bet button
     const betButton = this.add.graphics();
     betButton.fillStyle(0x00ff00, 1); // Light green color
-    betButton.fillRoundedRect(10, 70, 100, 50, 8); // Draw rounded rectangle with radius 10
-    const betText = this.add.text(60, 95, 'Bet', { font: '24px "Roboto", sans-serif', fill: '#000000', fontWeight: 'bold' }); // Black text with bold Arial font
+    betButton.fillRoundedRect(10, 70, 150, 50, 8); // Draw rounded rectangle with radius 10
+    const betText = this.add.text(85, 95, 'Bet', { font: '24px "plinko_bold", sans-serif', fill: '#000000', fontWeight: 'bold' }); // Black text with bold Arial font
     betText.setOrigin(0.5, 0.5);
-    betButton.setInteractive(new Phaser.Geom.Rectangle(10, 70, 100, 50), Phaser.Geom.Rectangle.Contains)
+    betButton.setInteractive(new Phaser.Geom.Rectangle(10, 70, 150, 50), Phaser.Geom.Rectangle.Contains)
         .on('pointerdown', () => {
+            // Play sound effect
+            this.sound.play('mouseClick', { volume: 3.0 });
+
             // BALL
             const ballGraphics = this.add.graphics();
             ballGraphics.fillStyle(0xff0000, 1); // Red color
