@@ -26,7 +26,6 @@ const config = {
         }
     }
 };
-
 const game = new Phaser.Game(config);
 
 window.addEventListener('resize', resizeGame);
@@ -40,9 +39,18 @@ function resizeGame() {
 
 let obstacles = [];
 const OBSTACLE_SPACING = 10;
-const OBSTACLE_RADIUS = 8;
+const OBSTACLE_RADIUS = Math.trunc(WIDTH / 240);
+const OBSTACLE_PAD = Math.trunc(HEIGHT / 19);
+const INIT_ROW_COUNT = 3;
+const FINAL_ROW_COUNT = 18;
+const OBSTACLE_START = {
+    x: Math.trunc((WIDTH / 2) - OBSTACLE_PAD),
+    y: Math.trunc(HEIGHT - (HEIGHT * 0.9))
+};
+console.log(`Obstacle Padding: ${OBSTACLE_PAD}, Obstacle Radius: ${OBSTACLE_RADIUS}`);
 
-const BALL_RADIUS = 16;
+const BALL_RADIUS = OBSTACLE_RADIUS*2;
+
 
 function preload() {
 
@@ -56,10 +64,23 @@ function create() {
     graphics.generateTexture('obstacle', OBSTACLE_RADIUS*2, OBSTACLE_RADIUS*2);
     graphics.destroy();
 
-    const obstacle = this.matter.add.image(WIDTH / 2, 200, 'obstacle');
-    obstacle.setCircle(OBSTACLE_RADIUS);
-    obstacle.setStatic(true); // Make the obstacle static so it doesn't move
-    // obstacle.setInteractive();
+    let pos = OBSTACLE_START;
+    for (let row = INIT_ROW_COUNT; row <= FINAL_ROW_COUNT; row++) {
+        for (let col = 0; col < row; col++) {
+            const obstacle = this.matter.add.image(pos.x, pos.y, 'obstacle');
+            obstacle.setCircle(OBSTACLE_RADIUS);
+            obstacle.setStatic(true);
+            obstacle.setFriction(0.6);
+            obstacle.setBounce(0.4);
+            obstacles.push(obstacle);
+            pos.x += OBSTACLE_PAD;
+        }
+        pos.x = WIDTH - pos.x + 0.5*OBSTACLE_PAD;
+        pos.y += OBSTACLE_PAD;
+    }
+
+
+
 
     // BALL
     const ballGraphics = this.add.graphics();
@@ -74,17 +95,6 @@ function create() {
     // const randomVelocityX = Phaser.Math.Between(-5, 5);
     const randomVelocityY = Phaser.Math.Between(-5, 5);
     ball.setVelocity(0, randomVelocityY);
-
-    // Detect collision between the ball and obstacle
-    this.matter.world.on('collisionstart', (event) => {
-        const pairs = event.pairs;
-        pairs.forEach(pair => {
-            if ((pair.bodyA === ball.body && pair.bodyB === obstacle.body) || 
-                (pair.bodyA === obstacle.body && pair.bodyB === ball.body)) {
-                triggerObstacleAnimation();
-            }
-        });
-    });
 
     // Add PLINKO text at the top center
     const textStyle = { font: '48px Impact', fill: '#ffffff', fontWeight: 'bold' };
