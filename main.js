@@ -70,6 +70,11 @@ const MULTI_PAD = OBSTACLE_PAD;
 const maxSounds = 5; // Example: max 5 concurrent sounds
 let currentSounds = 0;
 
+let multiHistory = [];
+const maxHistoryDisplay = 4;
+let prevCnt = 0;
+const MULTI_HISTORY_HEIGHT = 60;
+
 function preload() {
     WebFont.load({
         custom: {
@@ -180,6 +185,8 @@ function create() {
                     currentSounds = Math.max(0, currentSounds - 1);
                 }
             });
+
+            multiHistory.push(i);
         });
     }
 
@@ -212,9 +219,100 @@ function create() {
             ball.body.collisionFilter.category = CATEGORY_BALL;
             ball.body.collisionFilter.mask = CATEGORY_OBSTACLE;
         });
+    // Background block for multiHistory display
+    const historyBackground = this.add.graphics();
+    historyBackground.setDepth(10); // Set to a high depth to ensure it's on the topmost layer
+    historyBackground.fillStyle(0x0b1a33, 1); // Same as background color with 50% opacity
+    historyBackground.fillRect(WIDTH - 200, HEIGHT / 2 - 200 - MULTI_HISTORY_HEIGHT, MULTI_HISTORY_HEIGHT, MULTI_HISTORY_HEIGHT); // Adjust dimensions as needed
+
+    // Carve out the shape
+    const carveGraphics = this.add.graphics();
+    carveGraphics.setDepth(1000); // Set to a high depth to ensure it's on the topmost layer
+    carveGraphics.fillStyle(0x0b1a33, 1);
+    carveGraphics.beginPath();
+    carveGraphics.moveTo(WIDTH - 200, HEIGHT / 2 - 200 + 10);
+    carveGraphics.arc(WIDTH - 200 + 10, HEIGHT / 2 - 200 + 10, 10, Phaser.Math.DegToRad(180), Phaser.Math.DegToRad(270), false);
+    carveGraphics.lineTo(WIDTH - 200 + MULTI_HISTORY_HEIGHT - 10, HEIGHT / 2 - 200);
+    carveGraphics.arc(WIDTH - 200 + MULTI_HISTORY_HEIGHT - 10, HEIGHT / 2 - 200 + 10, 10, Phaser.Math.DegToRad(270), Phaser.Math.DegToRad(360), false);
+    carveGraphics.lineTo(WIDTH - 200 + MULTI_HISTORY_HEIGHT, HEIGHT / 2 - 200);
+    carveGraphics.lineTo(WIDTH - 200, HEIGHT / 2 - 200);
+    carveGraphics.closePath();
+    carveGraphics.fillPath();
+
+    // Background block for multiHistory display at the bottom
+    const historyBackgroundBottom = this.add.graphics();
+    historyBackgroundBottom.setDepth(10); // Set to a high depth to ensure it's on the topmost layer
+    historyBackgroundBottom.fillStyle(0x0b1a33, 1); // Same as background color with 50% opacity
+    historyBackgroundBottom.fillRect(WIDTH - 200, HEIGHT / 2 - 200 + 4 * MULTI_HISTORY_HEIGHT, MULTI_HISTORY_HEIGHT, MULTI_HISTORY_HEIGHT); // Adjust dimensions as needed
+
+    // Carve out the shape at the bottom
+    const carveGraphicsBottom = this.add.graphics();
+    carveGraphicsBottom.setDepth(1000); // Set to a high depth to ensure it's on the topmost layer
+    carveGraphicsBottom.fillStyle(0x0b1a33, 1);
+    carveGraphicsBottom.beginPath();
+    carveGraphicsBottom.moveTo(WIDTH - 200, HEIGHT / 2 - 200 + 4 * MULTI_HISTORY_HEIGHT - 10);
+    carveGraphicsBottom.arc(WIDTH - 200 + 10, HEIGHT / 2 - 200 + 4 * MULTI_HISTORY_HEIGHT - 10, 10, Phaser.Math.DegToRad(180), Phaser.Math.DegToRad(90), true);
+    carveGraphicsBottom.lineTo(WIDTH - 200 + MULTI_HISTORY_HEIGHT - 10, HEIGHT / 2 - 200 + 4 * MULTI_HISTORY_HEIGHT);
+    carveGraphicsBottom.arc(WIDTH - 200 + MULTI_HISTORY_HEIGHT - 10, HEIGHT / 2 - 200 + 4 * MULTI_HISTORY_HEIGHT - 10, 10, Phaser.Math.DegToRad(90), Phaser.Math.DegToRad(0), true);
+    carveGraphicsBottom.lineTo(WIDTH - 200 + MULTI_HISTORY_HEIGHT, HEIGHT / 2 - 200 + 4 * MULTI_HISTORY_HEIGHT);
+    carveGraphicsBottom.lineTo(WIDTH - 200, HEIGHT / 2 - 200 + 4 * MULTI_HISTORY_HEIGHT);
+    carveGraphicsBottom.closePath();
+    carveGraphicsBottom.fillPath();
 }
 
 function update() {
+    if (prevCnt != multiHistory.length) {
+        prevCnt = multiHistory.length;
 
+        const historyX = WIDTH - 200;
+        const historyY = HEIGHT / 2 - 200;
+        const historyWidth = MULTI_HISTORY_HEIGHT;
+        const historyHeight = MULTI_HISTORY_HEIGHT;
 
+        const historyToShow = multiHistory.slice(-maxHistoryDisplay);
+        historyToShow.forEach((multiIndex, i) => {
+            const x = historyX;
+            const y = historyY + (historyHeight) * i;
+            const color = MULTI_CONFIG[multiIndex].color;
+            const multiplierText = `${MULTI_CONFIG[multiIndex].multiplier}x`;
+            const historyGraphics = this.add.graphics();
+            historyGraphics.fillStyle(Phaser.Display.Color.GetColor(color[0], color[1], color[2]), 1);
+
+            // Determine if it's the first or last one to make rounded
+            const isFirst = i === 0 && historyToShow.length <= 4;
+            const isLast = i === historyToShow.length - 1 && historyToShow.length <= 4;
+            const radius = 10;
+
+            if (isFirst || isLast) {
+                historyGraphics.fillRoundedRect(x, y, historyWidth, historyHeight, { tl: isFirst ? radius : 0, tr: isFirst ? radius : 0, bl: isLast ? radius : 0, br: isLast ? radius : 0 });
+            } else {
+                historyGraphics.fillRect(x, y, historyWidth, historyHeight);
+            }
+
+            const historyText = this.add.text(x + historyWidth / 2, y + historyHeight / 2, multiplierText, { font: '15px plinko_bold', fill: '#000000', fontWeight: 'bold' });
+            historyText.setOrigin(0.5, 0.5);
+
+            if (multiHistory.length > 4) {
+                this.tweens.add({
+                    targets: [historyText, historyGraphics],
+                    y: `-=${historyHeight}`,
+                    duration: 200,
+                    ease: "Linear",
+                    onComplete: () => {
+                        if (historyText.y < historyY) {
+                            historyGraphics.destroy();
+                            historyText.destroy();
+                        } else {
+                            historyGraphics.fillRect(x, y, historyWidth, historyHeight);
+                        }
+                    }
+                });
+            }
+        });
+
+        if (multiHistory.length > 4) {
+            multiHistory = multiHistory.slice(-4);
+            prevCnt = 4;
+        }
+    }
 }
