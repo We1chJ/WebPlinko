@@ -270,7 +270,9 @@ function update() {
         const historyHeight = MULTI_HISTORY_HEIGHT;
 
         const historyToShow = multiHistory.slice(-maxHistoryDisplay);
-        historyToShow.forEach((multiIndex, i) => {
+        console.log(multiHistory.length);
+        for (let i = historyToShow.length - 1; i >= 0; i--) {
+            const multiIndex = historyToShow[i];
             const x = historyX;
             const y = historyY + (historyHeight) * i;
             const color = MULTI_CONFIG[multiIndex].color;
@@ -296,7 +298,7 @@ function update() {
                 this.tweens.add({
                     targets: [historyText, historyGraphics],
                     y: `-=${historyHeight}`,
-                    duration: 200,
+                    duration: 100,
                     ease: "Linear",
                     onComplete: () => {
                         if (historyText.y < historyY) {
@@ -308,7 +310,7 @@ function update() {
                     }
                 });
             }
-        });
+        }
 
         if (multiHistory.length > 4) {
             multiHistory = multiHistory.slice(-4);
