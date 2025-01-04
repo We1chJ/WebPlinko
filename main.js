@@ -124,10 +124,16 @@ function create() {
     // MULTIs
     for (let i = 0; i < NUM_MULTIS; i++) {
         const multiGraphics = this.add.graphics();
+        const shadowColor = Phaser.Display.Color.Interpolate.ColorWithColor(
+            new Phaser.Display.Color(MULTI_CONFIG[i].color[0], MULTI_CONFIG[i].color[1], MULTI_CONFIG[i].color[2]),
+            new Phaser.Display.Color(0, 0, 0),
+            100,
+            50
+        );
+        multiGraphics.fillStyle(Phaser.Display.Color.GetColor(shadowColor.r, shadowColor.g, shadowColor.b), 1); // Shadow color with some transparency
+        multiGraphics.fillRoundedRect(0, 0, MULTI_WIDTH, MULTI_HEIGHT, 5); // Draw longer shadow at the bottom
         multiGraphics.fillStyle(Phaser.Display.Color.GetColor(MULTI_CONFIG[i].color[0], MULTI_CONFIG[i].color[1], MULTI_CONFIG[i].color[2]), 1);
-        multiGraphics.fillRoundedRect(0, 0, MULTI_WIDTH, MULTI_HEIGHT, 5);
-        multiGraphics.fillStyle(Phaser.Display.Color.GetColor(0, 0, 0), 0.5); // Shadow color with some transparency
-        multiGraphics.fillRoundedRect(0, MULTI_HEIGHT - 5, MULTI_WIDTH, 5, { tl: 0, tr: 0, bl: 5, br: 5 }); // Draw longer shadow at the bottom
+        multiGraphics.fillRoundedRect(0, 0, MULTI_WIDTH, MULTI_HEIGHT - 5, 5);
         multiGraphics.generateTexture(`multi${i}`, MULTI_WIDTH, MULTI_HEIGHT);
         multiGraphics.destroy();
         const multi = this.matter.add.image(pos.x, pos.y, `multi${i}`);
@@ -137,7 +143,7 @@ function create() {
         // Add black text with the score corresponding
         const multiplierText = MULTI_CONFIG[i].multiplier >= 100 ? `${MULTI_CONFIG[i].multiplier}` : `${MULTI_CONFIG[i].multiplier}x`;
         const scoreText = this.add.text(pos.x, pos.y, multiplierText, { font: '15px plinko_bold', fill: '#000000', fontWeight: 'bold' });
-        scoreText.setOrigin(0.5, 0.5);
+        scoreText.setOrigin(0.5, 0.6);
 
         pos.x += MULTI_PAD;
         multi.setCollisionCategory(CATEGORY_MULTI);
