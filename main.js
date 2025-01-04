@@ -24,16 +24,6 @@ const config = {
 };
 const game = new Phaser.Game(config);
 
-window.addEventListener('resize', resizeGame);
-function resizeGame() {
-    const newWidth = window.innerWidth;
-    const newHeight = window.innerHeight;
-    game.scale.resize(newWidth, newHeight);
-    console.log("resized");
-    //TODO: make the position and obstacles place update too
-}
-
-let obstacles = [];
 const OBSTACLE_RADIUS = Math.trunc(WIDTH / 240);
 const OBSTACLE_PAD = Math.ceil(HEIGHT / 20);
 const INIT_ROW_COUNT = 3;
@@ -44,7 +34,7 @@ const OBSTACLE_START = {
 };
 
 
-const BALL_RADIUS = OBSTACLE_RADIUS * 1.5;
+const BALL_RADIUS = OBSTACLE_RADIUS * 1.7;
 
 const CATEGORY_BALL = 1;
 const CATEGORY_OBSTACLE = 2;
@@ -80,7 +70,6 @@ const MULTI_PAD = OBSTACLE_PAD;
 const maxSounds = 5; // Example: max 5 concurrent sounds
 let currentSounds = 0;
 
-
 function preload() {
     WebFont.load({
         custom: {
@@ -110,17 +99,39 @@ function create() {
             obstacle.setBounce(0);
             obstacle.body.collisionFilter.category = CATEGORY_OBSTACLE;
             obstacle.body.collisionFilter.mask = CATEGORY_BALL;
+            obstacle.setOnCollide((pair) => {
+                const ball = pair.bodyA.gameObject === obstacle ? pair.bodyB.gameObject : pair.bodyA.gameObject;
+                const shadowGraphics = this.add.graphics();
+                shadowGraphics.fillStyle(0xffffff, 0.5); // White color with 50% opacity
+                shadowGraphics.fillCircle(OBSTACLE_RADIUS, OBSTACLE_RADIUS, OBSTACLE_RADIUS); // Slightly larger shadow
+                shadowGraphics.generateTexture('shadow', OBSTACLE_RADIUS * 2, OBSTACLE_RADIUS * 2);
+                shadowGraphics.destroy();
+                if (!obstacle.shadow || !obstacle.shadow.active) {
+                    const shadow = this.add.image(obstacle.x, obstacle.y, 'shadow');
+                    shadow.setDepth(obstacle.depth - 1); // Ensure shadow is behind the obstacle
+                    obstacle.shadow = shadow;
+                    this.tweens.add({
+                        targets: shadow,
+                        scaleX: 1.8,
+                        scaleY: 1.8,
+                        alpha: 0,
+                        duration: 300,
+                        ease: 'Power1',
+                        onComplete: () => {
+                            shadow.destroy();
+                            obstacle.shadow = null;
+                        }
+                    });
+                }
+            });
 
-            obstacles.push(obstacle);
             pos.x += OBSTACLE_PAD;
         }
         pos.x = WIDTH - pos.x + 0.5 * OBSTACLE_PAD;
         pos.y += OBSTACLE_PAD;
     }
 
-    // pos.y = 50;
     pos.x += OBSTACLE_PAD;
-    // pos = {x : 50, y : 50};
     // MULTIs
     for (let i = 0; i < NUM_MULTIS; i++) {
         const multiGraphics = this.add.graphics();
@@ -186,14 +197,13 @@ function create() {
         .on('pointerdown', () => {
             // Play sound effect
             this.sound.play('mouseClick', { volume: 3.0 });
-
             // BALL
             const ballGraphics = this.add.graphics();
             ballGraphics.fillStyle(0xff0000, 1); // Red color
             ballGraphics.fillCircle(BALL_RADIUS, BALL_RADIUS, BALL_RADIUS); // Draw circle at (20, 20) with radius 20
             ballGraphics.generateTexture('ball', BALL_RADIUS * 2, BALL_RADIUS * 2);
             ballGraphics.destroy();
-            const rand_x = Phaser.Math.Between(-20, 20);
+            const rand_x = Phaser.Math.Between(1, 20) * (Phaser.Math.Between(0, 1) ? 1 : -1);
             const ball = this.matter.add.image(WIDTH / 2 + rand_x, -10, 'ball');
             ball.setCircle(BALL_RADIUS);
             ball.setBounce(0.3);
