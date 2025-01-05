@@ -20,7 +20,14 @@ const config = {
             gravity: { y: 1 },
             // debug: true, // comment this out to get rid of the extra physics 
         }
-    }
+    },
+    fps: {
+        target: 60,         // Target frame rate
+        forceSetTimeOut: true, // Keep using setTimeout even when the tab is inactive
+    },
+    audio: {
+        noAudio: false,     // Keeps audio playing even if the tab is unfocused
+    },
 };
 const game = new Phaser.Game(config);
 
