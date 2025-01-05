@@ -1,16 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable"
 
 export const metadata: Metadata = {
   title: "Plinko No Gamble",
@@ -24,10 +18,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body>
+        <ResizablePanelGroup direction="vertical" style={{ height: '100vh' }}>
+          <ResizablePanel defaultSize={10}>Header</ResizablePanel>
+          <ResizablePanel defaultSize={90}>
+            <ResizablePanelGroup direction="horizontal" style={{ flex: 1 }}>
+              <ResizablePanel defaultSize={20}>sidebar</ResizablePanel>
+              <ResizablePanel defaultSize={80}>{children}</ResizablePanel>
+            </ResizablePanelGroup>
+          </ResizablePanel>
+        </ResizablePanelGroup>
       </body>
     </html>
   );
