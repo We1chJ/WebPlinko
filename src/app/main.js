@@ -1,14 +1,37 @@
 export function initGame(container) {
-    const WIDTH = Math.max(container.clientWidth, 1229);
-    const HEIGHT = Math.max(container.clientHeight, 591);
-    console.log(`Width: ${WIDTH}, Height: ${HEIGHT}`);
+    // Fixed base dimensions - these will be our reference sizes
+    const BASE_WIDTH = 1229;  // Minimum width
+    const BASE_HEIGHT = 591;  // Minimum height
+
+    // Calculate the game scale and offset to center everything
+    function calculateScaleAndOffset() {
+        const containerWidth = container.clientWidth;
+        const containerHeight = container.clientHeight;
+
+        // Calculate available space
+        const scaleX = containerWidth / BASE_WIDTH;
+        const scaleY = containerHeight / BASE_HEIGHT;
+        const scale = Math.min(scaleX, scaleY);
+
+        // Calculate centering offsets
+        const offsetX = (containerWidth - (BASE_WIDTH * scale)) / 2;
+        const offsetY = (containerHeight - (BASE_HEIGHT * scale)) / 2;
+
+        return { scale, offsetX, offsetY };
+    }
+
+    // Initialize game with base dimensions
     const config = {
-        type: Phaser.AUTO, // Automatically choose WebGL or Canvas
-        width: WIDTH,
-        height: HEIGHT,
+        type: Phaser.AUTO,
+        width: BASE_WIDTH,
+        height: BASE_HEIGHT,
         backgroundColor: '#0b1a33',
         parent: container,
         resolution: window.devicePixelRatio,
+        scale: {
+            mode: Phaser.Scale.FIT,
+            autoCenter: Phaser.Scale.CENTER_BOTH
+        },
         scene: {
             preload: preload,
             create: create,
@@ -17,36 +40,41 @@ export function initGame(container) {
         physics: {
             default: 'matter',
             matter: {
-                gravity: { y: 1 },
-                // debug: true, // comment this out to get rid of the extra physics 
+                gravity: { y: 1 }
             }
         },
         fps: {
-            target: 60,         // Target frame rate
-            forceSetTimeOut: true, // Keep using setTimeout even when the tab is inactive
+            target: 60,
+            forceSetTimeOut: true,
         },
         audio: {
-            noAudio: false,     // Keeps audio playing even if the tab is unfocused
+            noAudio: false,
         },
     };
+
+    // Create game instance
     const game = new Phaser.Game(config);
 
-    const OBSTACLE_RADIUS = Math.trunc(WIDTH / 210);
-    const OBSTACLE_PAD = Math.ceil(HEIGHT / 20);
+    // Constants using BASE dimensions
+    const OBSTACLE_RADIUS = Math.trunc(BASE_WIDTH / 210);
+    const OBSTACLE_PAD = Math.ceil(BASE_HEIGHT / 20);
     const INIT_ROW_COUNT = 3;
     const FINAL_ROW_COUNT = 18;
     const OBSTACLE_START = {
-        x: Math.trunc((WIDTH / 2) - OBSTACLE_PAD),
-        y: Math.trunc(HEIGHT * 0.07)
+        x: Math.trunc((BASE_WIDTH / 2) - OBSTACLE_PAD),
+        y: Math.trunc(BASE_HEIGHT * 0.07)
     };
-
     const BALL_RADIUS = OBSTACLE_RADIUS * 1.9;
+    const MULTI_WIDTH = OBSTACLE_PAD - OBSTACLE_RADIUS * 0.01;
+    const MULTI_HEIGHT = OBSTACLE_PAD;
+    const MULTI_PAD = OBSTACLE_PAD;
+    const MULTI_HISTORY_HEIGHT = 60;
+    const MULTI_HISTORY_INIT_Y = BASE_HEIGHT / 2 - 150;
 
     const CATEGORY_BALL = 1;
     const CATEGORY_OBSTACLE = 2;
     const CATEGORY_MULTI = 3;
 
-    // RGB Values for multipliers
     const MULTI_CONFIG = {
         0: { multiplier: 1000, color: [255, 0, 0] },
         1: { multiplier: 130, color: [255, 30, 0] },
@@ -68,21 +96,23 @@ export function initGame(container) {
     };
 
     const NUM_MULTIS = 17;
-    const MULTI_WIDTH = OBSTACLE_PAD - OBSTACLE_RADIUS * 0.01;
-    const MULTI_HEIGHT = OBSTACLE_PAD;
-    const MULTI_PAD = OBSTACLE_PAD;
-
-    const maxSounds = 5; // Example: max 5 concurrent sounds
+    const maxSounds = 5;
     let currentSounds = 0;
-
     let multiHistory = [];
     const maxHistoryDisplay = 4;
     let prevCnt = 0;
-    const MULTI_HISTORY_HEIGHT = 60;
-    const MULTI_HISTORY_INIT_Y = HEIGHT / 2 - 150;
 
+    // Add resize handler
+    window.addEventListener('resize', () => {
+        if (game) {
+            const { scale, offsetX, offsetY } = calculateScaleAndOffset();
+            game.scale.setGameSize(BASE_WIDTH, BASE_HEIGHT);
+            game.scale.refresh();
+        }
+    });
+
+    // Modify your existing functions to use BASE dimensions
     function preload() {
-        // Update asset paths to start with '/'
         WebFont.load({
             custom: {
                 families: ['plinko_bold', 'plinko_m'],
@@ -93,30 +123,27 @@ export function initGame(container) {
         this.betButton = document.getElementById('bet-btn');
         this.betButton.addEventListener('click', (e) => {
             this.sound.play('mouseClick', { volume: 3.0 });
-            // BALL
             const ballGraphics = this.add.graphics();
-            ballGraphics.fillStyle(0xff0000, 1); // Red color
-            ballGraphics.fillCircle(BALL_RADIUS, BALL_RADIUS, BALL_RADIUS); // Draw circle at (20, 20) with radius 20
+            ballGraphics.fillStyle(0xff0000, 1);
+            ballGraphics.fillCircle(BALL_RADIUS, BALL_RADIUS, BALL_RADIUS);
             ballGraphics.generateTexture('ball', BALL_RADIUS * 2, BALL_RADIUS * 2);
             ballGraphics.destroy();
+
             const rand_x = Phaser.Math.Between(1, 20) * (Phaser.Math.Between(0, 1) ? 1 : -1);
-            const ball = this.matter.add.image(WIDTH / 2 + rand_x, -10, 'ball');
+            const ball = this.matter.add.image(BASE_WIDTH / 2 + rand_x, -10, 'ball');
             ball.setCircle(BALL_RADIUS);
             ball.setBounce(0.3);
             ball.setDensity(10000);
             ball.setMass(1000);
             ball.body.collisionFilter.category = CATEGORY_BALL;
             ball.body.collisionFilter.mask = CATEGORY_OBSTACLE;
-            console.log('received event');
         });
     }
 
-
     function create() {
-        // OBSTACLE
         const graphics = this.add.graphics();
-        graphics.fillStyle(0xffffff, 1); // White color
-        graphics.fillCircle(OBSTACLE_RADIUS, OBSTACLE_RADIUS, OBSTACLE_RADIUS); // Draw circle at (20, 20) with radius 20
+        graphics.fillStyle(0xffffff, 1);
+        graphics.fillCircle(OBSTACLE_RADIUS, OBSTACLE_RADIUS, OBSTACLE_RADIUS);
         graphics.generateTexture('obstacle', OBSTACLE_RADIUS * 2, OBSTACLE_RADIUS * 2);
         graphics.destroy();
 
@@ -133,13 +160,13 @@ export function initGame(container) {
                 obstacle.setOnCollide((pair) => {
                     const ball = pair.bodyA.gameObject === obstacle ? pair.bodyB.gameObject : pair.bodyA.gameObject;
                     const shadowGraphics = this.add.graphics();
-                    shadowGraphics.fillStyle(0xffffff, 0.5); // White color with 50% opacity
-                    shadowGraphics.fillCircle(OBSTACLE_RADIUS, OBSTACLE_RADIUS, OBSTACLE_RADIUS); // Slightly larger shadow
+                    shadowGraphics.fillStyle(0xffffff, 0.5);
+                    shadowGraphics.fillCircle(OBSTACLE_RADIUS, OBSTACLE_RADIUS, OBSTACLE_RADIUS);
                     shadowGraphics.generateTexture('shadow', OBSTACLE_RADIUS * 2, OBSTACLE_RADIUS * 2);
                     shadowGraphics.destroy();
                     if (!obstacle.shadow || !obstacle.shadow.active) {
                         const shadow = this.add.image(obstacle.x, obstacle.y, 'shadow');
-                        shadow.setDepth(obstacle.depth - 1); // Ensure shadow is behind the obstacle
+                        shadow.setDepth(obstacle.depth - 1);
                         obstacle.shadow = shadow;
                         this.tweens.add({
                             targets: shadow,
@@ -158,12 +185,11 @@ export function initGame(container) {
 
                 pos.x += OBSTACLE_PAD;
             }
-            pos.x = WIDTH - pos.x + 0.5 * OBSTACLE_PAD;
+            pos.x = BASE_WIDTH - pos.x + 0.5 * OBSTACLE_PAD;
             pos.y += OBSTACLE_PAD;
         }
 
         pos.x += OBSTACLE_PAD;
-        // MULTIs
         for (let i = 0; i < NUM_MULTIS; i++) {
             const multiGraphics = this.add.graphics();
             const shadowColor = Phaser.Display.Color.Interpolate.ColorWithColor(
@@ -172,8 +198,8 @@ export function initGame(container) {
                 100,
                 50
             );
-            multiGraphics.fillStyle(Phaser.Display.Color.GetColor(shadowColor.r, shadowColor.g, shadowColor.b), 1); // Shadow color with some transparency
-            multiGraphics.fillRoundedRect(0, 0, MULTI_WIDTH, MULTI_HEIGHT, 5); // Draw longer shadow at the bottom
+            multiGraphics.fillStyle(Phaser.Display.Color.GetColor(shadowColor.r, shadowColor.g, shadowColor.b), 1);
+            multiGraphics.fillRoundedRect(0, 0, MULTI_WIDTH, MULTI_HEIGHT, 5);
             multiGraphics.fillStyle(Phaser.Display.Color.GetColor(MULTI_CONFIG[i].color[0], MULTI_CONFIG[i].color[1], MULTI_CONFIG[i].color[2]), 1);
             multiGraphics.fillRoundedRect(0, 0, MULTI_WIDTH, MULTI_HEIGHT - 5, 5);
             multiGraphics.generateTexture(`multi${i}`, MULTI_WIDTH, MULTI_HEIGHT);
@@ -182,7 +208,6 @@ export function initGame(container) {
             multi.setRectangle(MULTI_WIDTH, MULTI_HEIGHT + 10, { chamfer: { radius: 5 } });
             multi.setStatic(true);
 
-            // Add black text with the score corresponding
             const multiplierText = MULTI_CONFIG[i].multiplier >= 100 ? `${MULTI_CONFIG[i].multiplier}` : `${MULTI_CONFIG[i].multiplier}x`;
             const scoreText = this.add.text(pos.x, pos.y, multiplierText, { font: '15px plinko_bold', fill: '#000000', fontWeight: 'bold' });
             scoreText.setOrigin(0.5, 0.6);
@@ -216,48 +241,42 @@ export function initGame(container) {
             });
         }
 
-        // // Add PLINKO text at the top left corner
-        // const textStyle = { font: '48px "plinko_bold", sans-serif', fill: '#ffffff', fontWeight: 'bold' };
-        // const text = this.add.text(10, 10, 'PLINKO', textStyle);
-        // text.setOrigin(0, 0);
+        const historyX = BASE_WIDTH - 200;
+        const historyY = MULTI_HISTORY_INIT_Y;
 
-        // Background block for multiHistory display
         const historyBackground = this.add.graphics();
-        historyBackground.setDepth(10); // Set to a high depth to ensure it's on the topmost layer
-        historyBackground.fillStyle(0x0b1a33, 1); // Same as background color with 50% opacity
-        historyBackground.fillRect(WIDTH - 200, MULTI_HISTORY_INIT_Y - MULTI_HISTORY_HEIGHT, MULTI_HISTORY_HEIGHT, MULTI_HISTORY_HEIGHT); // Adjust dimensions as needed
+        historyBackground.setDepth(10);
+        historyBackground.fillStyle(0x0b1a33, 1);
+        historyBackground.fillRect(historyX, historyY - MULTI_HISTORY_HEIGHT, MULTI_HISTORY_HEIGHT, MULTI_HISTORY_HEIGHT);
 
-        // Carve out the shape
         const carveGraphics = this.add.graphics();
-        carveGraphics.setDepth(1000); // Set to a high depth to ensure it's on the topmost layer
+        carveGraphics.setDepth(1000);
         carveGraphics.fillStyle(0x0b1a33, 1);
         carveGraphics.beginPath();
-        carveGraphics.moveTo(WIDTH - 200, MULTI_HISTORY_INIT_Y + 10);
-        carveGraphics.arc(WIDTH - 200 + 10, MULTI_HISTORY_INIT_Y + 10, 10, Phaser.Math.DegToRad(180), Phaser.Math.DegToRad(270), false);
-        carveGraphics.lineTo(WIDTH - 200 + MULTI_HISTORY_HEIGHT - 10, MULTI_HISTORY_INIT_Y);
-        carveGraphics.arc(WIDTH - 200 + MULTI_HISTORY_HEIGHT - 10, MULTI_HISTORY_INIT_Y + 10, 10, Phaser.Math.DegToRad(270), Phaser.Math.DegToRad(360), false);
-        carveGraphics.lineTo(WIDTH - 200 + MULTI_HISTORY_HEIGHT, MULTI_HISTORY_INIT_Y);
-        carveGraphics.lineTo(WIDTH - 200, MULTI_HISTORY_INIT_Y);
+        carveGraphics.moveTo(historyX, historyY + 10);
+        carveGraphics.arc(historyX + 10, historyY + 10, 10, Phaser.Math.DegToRad(180), Phaser.Math.DegToRad(270), false);
+        carveGraphics.lineTo(historyX + MULTI_HISTORY_HEIGHT - 10, historyY);
+        carveGraphics.arc(historyX + MULTI_HISTORY_HEIGHT - 10, historyY + 10, 10, Phaser.Math.DegToRad(270), Phaser.Math.DegToRad(360), false);
+        carveGraphics.lineTo(historyX + MULTI_HISTORY_HEIGHT, historyY);
+        carveGraphics.lineTo(historyX, historyY);
         carveGraphics.closePath();
         carveGraphics.fillPath();
 
-        // Background block for multiHistory display at the bottom
         const historyBackgroundBottom = this.add.graphics();
-        historyBackgroundBottom.setDepth(10); // Set to a high depth to ensure it's on the topmost layer
-        historyBackgroundBottom.fillStyle(0x0b1a33, 1); // Same as background color with 50% opacity
-        historyBackgroundBottom.fillRect(WIDTH - 200, MULTI_HISTORY_INIT_Y + 4 * MULTI_HISTORY_HEIGHT, MULTI_HISTORY_HEIGHT, MULTI_HISTORY_HEIGHT); // Adjust dimensions as needed
+        historyBackgroundBottom.setDepth(10);
+        historyBackgroundBottom.fillStyle(0x0b1a33, 1);
+        historyBackgroundBottom.fillRect(historyX, historyY + 4 * MULTI_HISTORY_HEIGHT, MULTI_HISTORY_HEIGHT, MULTI_HISTORY_HEIGHT);
 
-        // Carve out the shape at the bottom
         const carveGraphicsBottom = this.add.graphics();
-        carveGraphicsBottom.setDepth(1000); // Set to a high depth to ensure it's on the topmost layer
+        carveGraphicsBottom.setDepth(1000);
         carveGraphicsBottom.fillStyle(0x0b1a33, 1);
         carveGraphicsBottom.beginPath();
-        carveGraphicsBottom.moveTo(WIDTH - 200, MULTI_HISTORY_INIT_Y + 4 * MULTI_HISTORY_HEIGHT - 10);
-        carveGraphicsBottom.arc(WIDTH - 200 + 10, MULTI_HISTORY_INIT_Y + 4 * MULTI_HISTORY_HEIGHT - 10, 10, Phaser.Math.DegToRad(180), Phaser.Math.DegToRad(90), true);
-        carveGraphicsBottom.lineTo(WIDTH - 200 + MULTI_HISTORY_HEIGHT - 10, MULTI_HISTORY_INIT_Y + 4 * MULTI_HISTORY_HEIGHT);
-        carveGraphicsBottom.arc(WIDTH - 200 + MULTI_HISTORY_HEIGHT - 10, MULTI_HISTORY_INIT_Y + 4 * MULTI_HISTORY_HEIGHT - 10, 10, Phaser.Math.DegToRad(90), Phaser.Math.DegToRad(0), true);
-        carveGraphicsBottom.lineTo(WIDTH - 200 + MULTI_HISTORY_HEIGHT, MULTI_HISTORY_INIT_Y + 4 * MULTI_HISTORY_HEIGHT);
-        carveGraphicsBottom.lineTo(WIDTH - 200, MULTI_HISTORY_INIT_Y + 4 * MULTI_HISTORY_HEIGHT);
+        carveGraphicsBottom.moveTo(historyX, historyY + 4 * MULTI_HISTORY_HEIGHT - 10);
+        carveGraphicsBottom.arc(historyX + 10, historyY + 4 * MULTI_HISTORY_HEIGHT - 10, 10, Phaser.Math.DegToRad(180), Phaser.Math.DegToRad(90), true);
+        carveGraphicsBottom.lineTo(historyX + MULTI_HISTORY_HEIGHT - 10, historyY + 4 * MULTI_HISTORY_HEIGHT);
+        carveGraphicsBottom.arc(historyX + MULTI_HISTORY_HEIGHT - 10, historyY + 4 * MULTI_HISTORY_HEIGHT - 10, 10, Phaser.Math.DegToRad(90), Phaser.Math.DegToRad(0), true);
+        carveGraphicsBottom.lineTo(historyX + MULTI_HISTORY_HEIGHT, historyY + 4 * MULTI_HISTORY_HEIGHT);
+        carveGraphicsBottom.lineTo(historyX, historyY + 4 * MULTI_HISTORY_HEIGHT);
         carveGraphicsBottom.closePath();
         carveGraphicsBottom.fillPath();
     }
@@ -266,13 +285,12 @@ export function initGame(container) {
         if (prevCnt != multiHistory.length) {
             prevCnt = multiHistory.length;
 
-            const historyX = WIDTH - 200;
+            const historyX = BASE_WIDTH - 200;
             const historyY = MULTI_HISTORY_INIT_Y;
             const historyWidth = MULTI_HISTORY_HEIGHT;
             const historyHeight = MULTI_HISTORY_HEIGHT;
 
             const historyToShow = multiHistory.slice(-maxHistoryDisplay);
-            console.log(multiHistory.length);
             for (let i = historyToShow.length - 1; i >= 0; i--) {
                 const multiIndex = historyToShow[i];
                 const x = historyX;
@@ -282,7 +300,6 @@ export function initGame(container) {
                 const historyGraphics = this.add.graphics();
                 historyGraphics.fillStyle(Phaser.Display.Color.GetColor(color[0], color[1], color[2]), 1);
 
-                // Determine if it's the first or last one to make rounded
                 const isFirst = i === 0 && historyToShow.length <= 4;
                 const isLast = i === historyToShow.length - 1 && historyToShow.length <= 4;
                 const radius = 10;
