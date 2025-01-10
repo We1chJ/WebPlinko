@@ -1,6 +1,6 @@
 export function initGame(container) {
-    const WIDTH = container.clientWidth;
-    const HEIGHT = container.clientHeight;
+    const WIDTH = Math.max(container.clientWidth, 1229);
+    const HEIGHT = Math.max(container.clientHeight, 591);
     console.log(`Width: ${WIDTH}, Height: ${HEIGHT}`);
     const config = {
         type: Phaser.AUTO, // Automatically choose WebGL or Canvas
@@ -68,7 +68,7 @@ export function initGame(container) {
     };
 
     const NUM_MULTIS = 17;
-    const MULTI_WIDTH = OBSTACLE_PAD - OBSTACLE_RADIUS * 0.5;
+    const MULTI_WIDTH = OBSTACLE_PAD - OBSTACLE_RADIUS * 0.01;
     const MULTI_HEIGHT = OBSTACLE_PAD;
     const MULTI_PAD = OBSTACLE_PAD;
 
