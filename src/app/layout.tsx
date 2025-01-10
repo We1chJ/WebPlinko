@@ -26,13 +26,13 @@ export default function RootLayout({
         <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
         <ResizablePanelGroup direction="vertical" style={{ height: '100vh' }}>
           <ResizablePanel defaultSize={10}><Header /></ResizablePanel>
-          <ResizablePanel defaultSize={80}>
+          <ResizablePanel defaultSize={85}>
             <ResizablePanelGroup direction="horizontal" style={{ flex: 1 }}>
               <ResizablePanel defaultSize={20}><Sidebar /></ResizablePanel>
               <ResizablePanel defaultSize={80}>{children}</ResizablePanel>
             </ResizablePanelGroup>
           </ResizablePanel>
-          <ResizablePanel defaultSize={10}><Footer /></ResizablePanel>
+          <ResizablePanel defaultSize={5}><Footer /></ResizablePanel>
         </ResizablePanelGroup>
       </body>
     </html>

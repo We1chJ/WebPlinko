@@ -1,10 +1,7 @@
 export function initGame(container) {
-    const WIDTH = window.innerWidth * 0.8;
-    const HEIGHT = window.innerHeight * 0.8;
+    const WIDTH = container.clientWidth;
+    const HEIGHT = container.clientHeight;
     console.log(`Width: ${WIDTH}, Height: ${HEIGHT}`);
-    // const WIDTH = 1536;
-    // const HEIGHT = 695;
-
     const config = {
         type: Phaser.AUTO, // Automatically choose WebGL or Canvas
         width: WIDTH,
@@ -34,17 +31,16 @@ export function initGame(container) {
     };
     const game = new Phaser.Game(config);
 
-    const OBSTACLE_RADIUS = Math.trunc(WIDTH / 240);
+    const OBSTACLE_RADIUS = Math.trunc(WIDTH / 210);
     const OBSTACLE_PAD = Math.ceil(HEIGHT / 20);
     const INIT_ROW_COUNT = 3;
     const FINAL_ROW_COUNT = 18;
     const OBSTACLE_START = {
         x: Math.trunc((WIDTH / 2) - OBSTACLE_PAD),
-        y: Math.trunc(HEIGHT - (HEIGHT * 0.9))
+        y: Math.trunc(HEIGHT * 0.07)
     };
 
-
-    const BALL_RADIUS = OBSTACLE_RADIUS * 1.7;
+    const BALL_RADIUS = OBSTACLE_RADIUS * 1.9;
 
     const CATEGORY_BALL = 1;
     const CATEGORY_OBSTACLE = 2;
@@ -83,6 +79,7 @@ export function initGame(container) {
     const maxHistoryDisplay = 4;
     let prevCnt = 0;
     const MULTI_HISTORY_HEIGHT = 60;
+    const MULTI_HISTORY_INIT_Y = HEIGHT / 2 - 150;
 
     function preload() {
         // Update asset paths to start with '/'
@@ -228,19 +225,19 @@ export function initGame(container) {
         const historyBackground = this.add.graphics();
         historyBackground.setDepth(10); // Set to a high depth to ensure it's on the topmost layer
         historyBackground.fillStyle(0x0b1a33, 1); // Same as background color with 50% opacity
-        historyBackground.fillRect(WIDTH - 200, HEIGHT / 2 - 200 - MULTI_HISTORY_HEIGHT, MULTI_HISTORY_HEIGHT, MULTI_HISTORY_HEIGHT); // Adjust dimensions as needed
+        historyBackground.fillRect(WIDTH - 200, MULTI_HISTORY_INIT_Y - MULTI_HISTORY_HEIGHT, MULTI_HISTORY_HEIGHT, MULTI_HISTORY_HEIGHT); // Adjust dimensions as needed
 
         // Carve out the shape
         const carveGraphics = this.add.graphics();
         carveGraphics.setDepth(1000); // Set to a high depth to ensure it's on the topmost layer
         carveGraphics.fillStyle(0x0b1a33, 1);
         carveGraphics.beginPath();
-        carveGraphics.moveTo(WIDTH - 200, HEIGHT / 2 - 200 + 10);
-        carveGraphics.arc(WIDTH - 200 + 10, HEIGHT / 2 - 200 + 10, 10, Phaser.Math.DegToRad(180), Phaser.Math.DegToRad(270), false);
-        carveGraphics.lineTo(WIDTH - 200 + MULTI_HISTORY_HEIGHT - 10, HEIGHT / 2 - 200);
-        carveGraphics.arc(WIDTH - 200 + MULTI_HISTORY_HEIGHT - 10, HEIGHT / 2 - 200 + 10, 10, Phaser.Math.DegToRad(270), Phaser.Math.DegToRad(360), false);
-        carveGraphics.lineTo(WIDTH - 200 + MULTI_HISTORY_HEIGHT, HEIGHT / 2 - 200);
-        carveGraphics.lineTo(WIDTH - 200, HEIGHT / 2 - 200);
+        carveGraphics.moveTo(WIDTH - 200, MULTI_HISTORY_INIT_Y + 10);
+        carveGraphics.arc(WIDTH - 200 + 10, MULTI_HISTORY_INIT_Y + 10, 10, Phaser.Math.DegToRad(180), Phaser.Math.DegToRad(270), false);
+        carveGraphics.lineTo(WIDTH - 200 + MULTI_HISTORY_HEIGHT - 10, MULTI_HISTORY_INIT_Y);
+        carveGraphics.arc(WIDTH - 200 + MULTI_HISTORY_HEIGHT - 10, MULTI_HISTORY_INIT_Y + 10, 10, Phaser.Math.DegToRad(270), Phaser.Math.DegToRad(360), false);
+        carveGraphics.lineTo(WIDTH - 200 + MULTI_HISTORY_HEIGHT, MULTI_HISTORY_INIT_Y);
+        carveGraphics.lineTo(WIDTH - 200, MULTI_HISTORY_INIT_Y);
         carveGraphics.closePath();
         carveGraphics.fillPath();
 
@@ -248,19 +245,19 @@ export function initGame(container) {
         const historyBackgroundBottom = this.add.graphics();
         historyBackgroundBottom.setDepth(10); // Set to a high depth to ensure it's on the topmost layer
         historyBackgroundBottom.fillStyle(0x0b1a33, 1); // Same as background color with 50% opacity
-        historyBackgroundBottom.fillRect(WIDTH - 200, HEIGHT / 2 - 200 + 4 * MULTI_HISTORY_HEIGHT, MULTI_HISTORY_HEIGHT, MULTI_HISTORY_HEIGHT); // Adjust dimensions as needed
+        historyBackgroundBottom.fillRect(WIDTH - 200, MULTI_HISTORY_INIT_Y + 4 * MULTI_HISTORY_HEIGHT, MULTI_HISTORY_HEIGHT, MULTI_HISTORY_HEIGHT); // Adjust dimensions as needed
 
         // Carve out the shape at the bottom
         const carveGraphicsBottom = this.add.graphics();
         carveGraphicsBottom.setDepth(1000); // Set to a high depth to ensure it's on the topmost layer
         carveGraphicsBottom.fillStyle(0x0b1a33, 1);
         carveGraphicsBottom.beginPath();
-        carveGraphicsBottom.moveTo(WIDTH - 200, HEIGHT / 2 - 200 + 4 * MULTI_HISTORY_HEIGHT - 10);
-        carveGraphicsBottom.arc(WIDTH - 200 + 10, HEIGHT / 2 - 200 + 4 * MULTI_HISTORY_HEIGHT - 10, 10, Phaser.Math.DegToRad(180), Phaser.Math.DegToRad(90), true);
-        carveGraphicsBottom.lineTo(WIDTH - 200 + MULTI_HISTORY_HEIGHT - 10, HEIGHT / 2 - 200 + 4 * MULTI_HISTORY_HEIGHT);
-        carveGraphicsBottom.arc(WIDTH - 200 + MULTI_HISTORY_HEIGHT - 10, HEIGHT / 2 - 200 + 4 * MULTI_HISTORY_HEIGHT - 10, 10, Phaser.Math.DegToRad(90), Phaser.Math.DegToRad(0), true);
-        carveGraphicsBottom.lineTo(WIDTH - 200 + MULTI_HISTORY_HEIGHT, HEIGHT / 2 - 200 + 4 * MULTI_HISTORY_HEIGHT);
-        carveGraphicsBottom.lineTo(WIDTH - 200, HEIGHT / 2 - 200 + 4 * MULTI_HISTORY_HEIGHT);
+        carveGraphicsBottom.moveTo(WIDTH - 200, MULTI_HISTORY_INIT_Y + 4 * MULTI_HISTORY_HEIGHT - 10);
+        carveGraphicsBottom.arc(WIDTH - 200 + 10, MULTI_HISTORY_INIT_Y + 4 * MULTI_HISTORY_HEIGHT - 10, 10, Phaser.Math.DegToRad(180), Phaser.Math.DegToRad(90), true);
+        carveGraphicsBottom.lineTo(WIDTH - 200 + MULTI_HISTORY_HEIGHT - 10, MULTI_HISTORY_INIT_Y + 4 * MULTI_HISTORY_HEIGHT);
+        carveGraphicsBottom.arc(WIDTH - 200 + MULTI_HISTORY_HEIGHT - 10, MULTI_HISTORY_INIT_Y + 4 * MULTI_HISTORY_HEIGHT - 10, 10, Phaser.Math.DegToRad(90), Phaser.Math.DegToRad(0), true);
+        carveGraphicsBottom.lineTo(WIDTH - 200 + MULTI_HISTORY_HEIGHT, MULTI_HISTORY_INIT_Y + 4 * MULTI_HISTORY_HEIGHT);
+        carveGraphicsBottom.lineTo(WIDTH - 200, MULTI_HISTORY_INIT_Y + 4 * MULTI_HISTORY_HEIGHT);
         carveGraphicsBottom.closePath();
         carveGraphicsBottom.fillPath();
     }
@@ -270,7 +267,7 @@ export function initGame(container) {
             prevCnt = multiHistory.length;
 
             const historyX = WIDTH - 200;
-            const historyY = HEIGHT / 2 - 200;
+            const historyY = MULTI_HISTORY_INIT_Y;
             const historyWidth = MULTI_HISTORY_HEIGHT;
             const historyHeight = MULTI_HISTORY_HEIGHT;
 
