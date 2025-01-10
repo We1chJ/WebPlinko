@@ -11,6 +11,7 @@ const Game = () => {
     const gameInstance = useRef<PhaserGame | null>(null);
 
     useEffect(() => {
+        // if this is complaining, it can be ignored. It is due to javascript converted to typescript
         if (typeof window !== 'undefined' && gameRef.current && !gameInstance.current) {
             gameInstance.current = initGame(gameRef.current);
         }

@@ -1,6 +1,7 @@
 export function initGame(container) {
-    const WIDTH = window.innerWidth*0.8;
-    const HEIGHT = window.innerHeight*0.8;
+    const WIDTH = window.innerWidth * 0.8;
+    const HEIGHT = window.innerHeight * 0.8;
+    console.log(`Width: ${WIDTH}, Height: ${HEIGHT}`);
     // const WIDTH = 1536;
     // const HEIGHT = 695;
 
@@ -9,7 +10,6 @@ export function initGame(container) {
         width: WIDTH,
         height: HEIGHT,
         backgroundColor: '#0b1a33',
-        autoResize: true,
         parent: container,
         resolution: window.devicePixelRatio,
         scene: {
@@ -93,6 +93,25 @@ export function initGame(container) {
         });
         this.load.audio('mouseClick', '/assets/audio/mouseClick.mp3');
         this.load.audio('ballBounce', '/assets/audio/ballBounce.mp3');
+        this.betButton = document.getElementById('bet-btn');
+        this.betButton.addEventListener('click', (e) => {
+            this.sound.play('mouseClick', { volume: 3.0 });
+            // BALL
+            const ballGraphics = this.add.graphics();
+            ballGraphics.fillStyle(0xff0000, 1); // Red color
+            ballGraphics.fillCircle(BALL_RADIUS, BALL_RADIUS, BALL_RADIUS); // Draw circle at (20, 20) with radius 20
+            ballGraphics.generateTexture('ball', BALL_RADIUS * 2, BALL_RADIUS * 2);
+            ballGraphics.destroy();
+            const rand_x = Phaser.Math.Between(1, 20) * (Phaser.Math.Between(0, 1) ? 1 : -1);
+            const ball = this.matter.add.image(WIDTH / 2 + rand_x, -10, 'ball');
+            ball.setCircle(BALL_RADIUS);
+            ball.setBounce(0.3);
+            ball.setDensity(10000);
+            ball.setMass(1000);
+            ball.body.collisionFilter.category = CATEGORY_BALL;
+            ball.body.collisionFilter.mask = CATEGORY_OBSTACLE;
+            console.log('received event');
+        });
     }
 
 
@@ -200,35 +219,11 @@ export function initGame(container) {
             });
         }
 
-        // Add PLINKO text at the top left corner
-        const textStyle = { font: '48px "plinko_bold", sans-serif', fill: '#ffffff', fontWeight: 'bold' };
-        const text = this.add.text(10, 10, 'PLINKO', textStyle);
-        text.setOrigin(0, 0);
-        // Add Bet button
-        const betButton = this.add.graphics();
-        betButton.fillStyle(0x00ff00, 1); // Light green color
-        betButton.fillRoundedRect(10, 70, 150, 50, 8); // Draw rounded rectangle with radius 10
-        const betText = this.add.text(85, 95, 'Bet', { font: '24px "plinko_bold", sans-serif', fill: '#000000', fontWeight: 'bold' }); // Black text with bold Arial font
-        betText.setOrigin(0.5, 0.5);
-        betButton.setInteractive(new Phaser.Geom.Rectangle(10, 70, 150, 50), Phaser.Geom.Rectangle.Contains)
-            .on('pointerdown', () => {
-                // Play sound effect
-                this.sound.play('mouseClick', { volume: 3.0 });
-                // BALL
-                const ballGraphics = this.add.graphics();
-                ballGraphics.fillStyle(0xff0000, 1); // Red color
-                ballGraphics.fillCircle(BALL_RADIUS, BALL_RADIUS, BALL_RADIUS); // Draw circle at (20, 20) with radius 20
-                ballGraphics.generateTexture('ball', BALL_RADIUS * 2, BALL_RADIUS * 2);
-                ballGraphics.destroy();
-                const rand_x = Phaser.Math.Between(1, 20) * (Phaser.Math.Between(0, 1) ? 1 : -1);
-                const ball = this.matter.add.image(WIDTH / 2 + rand_x, -10, 'ball');
-                ball.setCircle(BALL_RADIUS);
-                ball.setBounce(0.3);
-                ball.setDensity(10000);
-                ball.setMass(1000);
-                ball.body.collisionFilter.category = CATEGORY_BALL;
-                ball.body.collisionFilter.mask = CATEGORY_OBSTACLE;
-            });
+        // // Add PLINKO text at the top left corner
+        // const textStyle = { font: '48px "plinko_bold", sans-serif', fill: '#ffffff', fontWeight: 'bold' };
+        // const text = this.add.text(10, 10, 'PLINKO', textStyle);
+        // text.setOrigin(0, 0);
+
         // Background block for multiHistory display
         const historyBackground = this.add.graphics();
         historyBackground.setDepth(10); // Set to a high depth to ensure it's on the topmost layer
