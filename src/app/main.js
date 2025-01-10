@@ -25,7 +25,7 @@ export function initGame(container) {
         type: Phaser.AUTO,
         width: BASE_WIDTH,
         height: BASE_HEIGHT,
-        backgroundColor: '#0b1a33',
+        backgroundColor: '#0F212E',
         parent: container,
         resolution: window.devicePixelRatio,
         scale: {
@@ -246,12 +246,12 @@ export function initGame(container) {
 
         const historyBackground = this.add.graphics();
         historyBackground.setDepth(10);
-        historyBackground.fillStyle(0x0b1a33, 1);
+        historyBackground.fillStyle(0x0F212E, 1);
         historyBackground.fillRect(historyX, historyY - MULTI_HISTORY_HEIGHT, MULTI_HISTORY_HEIGHT, MULTI_HISTORY_HEIGHT);
 
         const carveGraphics = this.add.graphics();
         carveGraphics.setDepth(1000);
-        carveGraphics.fillStyle(0x0b1a33, 1);
+        carveGraphics.fillStyle(0x0F212E, 1);
         carveGraphics.beginPath();
         carveGraphics.moveTo(historyX, historyY + 10);
         carveGraphics.arc(historyX + 10, historyY + 10, 10, Phaser.Math.DegToRad(180), Phaser.Math.DegToRad(270), false);
@@ -264,12 +264,12 @@ export function initGame(container) {
 
         const historyBackgroundBottom = this.add.graphics();
         historyBackgroundBottom.setDepth(10);
-        historyBackgroundBottom.fillStyle(0x0b1a33, 1);
+        historyBackgroundBottom.fillStyle(0x0F212E, 1);
         historyBackgroundBottom.fillRect(historyX, historyY + 4 * MULTI_HISTORY_HEIGHT, MULTI_HISTORY_HEIGHT, MULTI_HISTORY_HEIGHT);
 
         const carveGraphicsBottom = this.add.graphics();
         carveGraphicsBottom.setDepth(1000);
-        carveGraphicsBottom.fillStyle(0x0b1a33, 1);
+        carveGraphicsBottom.fillStyle(0x0F212E, 1);
         carveGraphicsBottom.beginPath();
         carveGraphicsBottom.moveTo(historyX, historyY + 4 * MULTI_HISTORY_HEIGHT - 10);
         carveGraphicsBottom.arc(historyX + 10, historyY + 4 * MULTI_HISTORY_HEIGHT - 10, 10, Phaser.Math.DegToRad(180), Phaser.Math.DegToRad(90), true);
