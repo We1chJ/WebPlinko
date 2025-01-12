@@ -60,27 +60,43 @@ const Sidebar = () => {
                     </div>
                     <div className='w-full'>
                         <Label htmlFor="risk" style={{ color: 'rgb(177, 186, 211)', fontFamily: 'plinko_m' }}>Risk</Label>
-                        <select
-                            id="risk"
-                            className='w-full h-10 p-2 mt-1 rounded bg-[#0F212E] border-2 border-[rgb(47,69,83)] focus:border-[rgb(80,110,130)] hover:border-[rgb(80,110,130)] text-white transition duration-200 ease-in-out'
-                            style={{ fontFamily: 'plinko_m' }}
-                        >
-                            <option value="low">Low</option>
-                            <option value="medium">Medium</option>
-                            <option value="high">High</option>
-                        </select>
+                        <div className='relative'>
+                            <select
+                                id="risk"
+                                className='w-full h-10 p-2 mt-1 rounded bg-[#0F212E] border-2 border-[rgb(47,69,83)] focus:border-[rgb(80,110,130)] hover:border-[rgb(80,110,130)] text-white transition duration-200 ease-in-out appearance-none'
+                                style={{ fontFamily: 'plinko_m' }}
+                            >
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                            </select>
+                            <div className="absolute right-0 flex items-center pr-3 pointer-events-none" style={{ top: '55%', transform: 'translateY(-50%)' }}>
+                                <svg fill="rgb(177, 186, 211)" viewBox="0 0 64 64" className="svg-icon" style={{ width: '15px', height: '15px' }}>
+                                    <title></title>
+                                    <path d="M32.271 49.763 9.201 26.692l6.928-6.93 16.145 16.145 16.144-16.144 6.93 6.929-23.072 23.07h-.005Z"></path>
+                                </svg>
+                            </div>
+                        </div>
                     </div>
                     <div className='w-full'>
                         <Label htmlFor="rows" style={{ color: 'rgb(177, 186, 211)', fontFamily: 'plinko_m' }}>Rows</Label>
-                        <select
-                            id="rows"
-                            className='w-full h-10 p-2 mt-1 rounded bg-[#0F212E] border-2 border-[rgb(47,69,83)] focus:border-[rgb(80,110,130)] hover:border-[rgb(80,110,130)] text-white transition duration-200 ease-in-out'
-                            style={{ fontFamily: 'plinko_m' }}
-                        >
-                            {Array.from({ length: 9 }, (_, i) => i + 8).map((value) => (
-                                <option key={value} value={value}>{value}</option>
-                            ))}
-                        </select>
+                        <div className='relative'>
+                            <select
+                                id="rows"
+                                className='w-full h-10 p-2 mt-1 rounded bg-[#0F212E] border-2 border-[rgb(47,69,83)] focus:border-[rgb(80,110,130)] hover:border-[rgb(80,110,130)] text-white transition duration-200 ease-in-out appearance-none'
+                                style={{ fontFamily: 'plinko_m' }}
+                            >
+                                {Array.from({ length: 9 }, (_, i) => i + 8).map((value) => (
+                                    <option key={value} value={value}>{value}</option>
+                                ))}
+                            </select>
+                            <div className="absolute right-0 flex items-center pr-3 pointer-events-none" style={{ top: '55%', transform: 'translateY(-50%)' }}>
+                                <svg fill="rgb(177, 186, 211)" viewBox="0 0 64 64" className="svg-icon" style={{ width: '15px', height: '15px' }}>
+                                    <title></title>
+                                    <path d="M32.271 49.763 9.201 26.692l6.928-6.93 16.145 16.145 16.144-16.144 6.93 6.929-23.072 23.07h-.005Z"></path>
+                                </svg>
+                            </div>
+                        </div>
                         <button
                             id="bet-btn"
                             className="w-full h-14 text-black font-bold py-2 rounded transition duration-300 ease-in-out transform hover:bg-green-500 mt-4 text-lg"
