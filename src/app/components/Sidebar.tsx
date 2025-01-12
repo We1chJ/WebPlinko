@@ -4,9 +4,11 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import React from 'react'
+import React, { useState } from 'react'
 
 const Sidebar = () => {
+    const [amount, setAmount] = useState(0.00);
+
     return (
         <div className='w-full h-full p-4 flex flex-col items-center' style={{ fontFamily: 'plinko_m', backgroundColor: 'rgb(33,55,67)', color: 'white' }}>
             <Tabs defaultValue="manual" className='w-full p-2'>
@@ -23,6 +25,17 @@ const Sidebar = () => {
                                 type='number'
                                 step={0.01}
                                 placeholder={'0.00'}
+                                value={amount}
+                                onChange={(e) => {
+                                    const value = parseFloat(e.target.value);
+                                    setAmount(isNaN(value) ? 0.00 : value);
+                                    console.log(amount);
+                                }}
+                                onBlur={(e) => {
+                                    const value = parseFloat(e.target.value);
+                                    setAmount(isNaN(value) ? 0.00 : parseFloat(value.toFixed(2)));
+                                    e.target.value = value.toFixed(2);
+                                }}
                                 className='pr-8'
                             />
                             <svg fill="none" viewBox="0 0 96 96" className="svg-icon absolute right-3 top-3" style={{ width: '16px', height: '16px' }}>
