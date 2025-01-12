@@ -209,7 +209,7 @@ export function initGame(container) {
             multi.setStatic(true);
 
             const multiplierText = MULTI_CONFIG[i].multiplier >= 100 ? `${MULTI_CONFIG[i].multiplier}` : `${MULTI_CONFIG[i].multiplier}x`;
-            const scoreText = this.add.text(pos.x, pos.y, multiplierText, { font: '15px plinko_bold', fill: '#000000', fontWeight: 'bold' });
+            const scoreText = this.add.text(pos.x, pos.y, multiplierText, { font: '14px plinko_bold', fill: '#000000', fontWeight: 'bold' });
             scoreText.setOrigin(0.5, 0.6);
 
             pos.x += MULTI_PAD;
