@@ -10,22 +10,22 @@ const Sidebar = () => {
     const [amount, setAmount] = useState(0.00);
 
     return (
-        <div className='w-full h-full p-4 flex flex-col items-center' style={{ fontFamily: 'plinko_m', backgroundColor: 'rgb(33,55,67)', color: 'white' }}>
+        <div className='w-full h-full p-3 flex flex-col items-center' style={{ fontFamily: 'plinko_m', backgroundColor: 'rgb(33,55,67)', color: 'white' }}>
             <Tabs defaultValue="manual" className='w-full p-2'>
                 <TabsList className='w-full flex justify-center rounded-full text-white h-12' style={{ backgroundColor: '#0F212E', minWidth: '130px' }}>
                     <TabsTrigger value="manual" className='flex-1 flex justify-center rounded-full data-[state=active]:bg-[rgb(47,69,83)] data-[state=active]:text-white text-sm font-bold text-center h-10' style={{ fontFamily: 'plinko_m' }}>Manual</TabsTrigger>
                     <TabsTrigger value="auto" className='flex-1 flex justify-center rounded-full text-white data-[state=active]:bg-[rgb(47,69,83)] data-[state=active]:text-white text-sm font-bold text-center h-10' style={{ fontFamily: 'plinko_m' }}>Auto</TabsTrigger>
                 </TabsList>
                 <TabsContent value="manual">
-                    <div className='w-full '>
+                    <div className='w-full'>
                         <Label htmlFor="amount" style={{ color: 'rgb(177, 186, 211)', fontFamily: 'plinko_m', fontWeight: 'bold' }}>Amount</Label>
-                        <div className='relative mr-16'>
+                        <div className='relative mr-20'>
                             <Input
                                 id="amount"
                                 type='number'
                                 step={0.01}
                                 placeholder={'0.00'}
-                                value={amount}
+                                value={amount == 0 ? '0.00' : amount}
                                 onChange={(e) => {
                                     const value = parseFloat(e.target.value);
                                     setAmount(isNaN(value) ? 0.00 : value);
@@ -60,28 +60,40 @@ const Sidebar = () => {
                     </div>
                     <div className='w-full'>
                         <Label htmlFor="risk" style={{ color: 'rgb(177, 186, 211)', fontFamily: 'plinko_m' }}>Risk</Label>
-                        <Input
+                        <select
                             id="risk"
-                        />
+                            className='w-full h-10 p-2 mt-1 rounded bg-[#0F212E] border-2 border-[rgb(47,69,83)] focus:border-[rgb(80,110,130)] hover:border-[rgb(80,110,130)] text-white transition duration-200 ease-in-out'
+                            style={{ fontFamily: 'plinko_m' }}
+                        >
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
                     </div>
                     <div className='w-full'>
                         <Label htmlFor="rows" style={{ color: 'rgb(177, 186, 211)', fontFamily: 'plinko_m' }}>Rows</Label>
-                        <Input
+                        <select
                             id="rows"
-                        />
+                            className='w-full h-10 p-2 mt-1 rounded bg-[#0F212E] border-2 border-[rgb(47,69,83)] focus:border-[rgb(80,110,130)] hover:border-[rgb(80,110,130)] text-white transition duration-200 ease-in-out'
+                            style={{ fontFamily: 'plinko_m' }}
+                        >
+                            {Array.from({ length: 9 }, (_, i) => i + 8).map((value) => (
+                                <option key={value} value={value}>{value}</option>
+                            ))}
+                        </select>
+                        <button
+                            id="bet-btn"
+                            className="w-full h-14 text-black font-bold py-2 rounded transition duration-300 ease-in-out transform hover:bg-green-500 mt-4 text-lg"
+                            style={{ backgroundColor: '#00ff00' }}
+                        >
+                            Bet
+                        </button>
                     </div>
                 </TabsContent>
                 <TabsContent value="auto">
                     Change your password here.
                 </TabsContent>
             </Tabs>
-            <Button
-                id="bet-btn"
-                className="w-full h-14 text-black font-bold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:bg-green-700 hover:scale-105 mt-4 text-lg"
-                style={{ backgroundColor: '#00ff00' }}
-            >
-                Bet
-            </Button>
         </div>
     )
 }
