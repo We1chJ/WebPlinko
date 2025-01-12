@@ -63,7 +63,7 @@ const Sidebar = () => {
                         <div className='relative'>
                             <select
                                 id="risk"
-                                className='w-full h-10 p-2 mt-1 rounded bg-[#0F212E] border-2 border-[rgb(47,69,83)] focus:border-[rgb(80,110,130)] hover:border-[rgb(80,110,130)] text-white transition duration-200 ease-in-out appearance-none'
+                                className='w-full h-10 p-2 mt-1 rounded bg-[#0F212E] border-2 border-[rgb(47,69,83)] focus:border-[rgb(80,110,130)] hover:border-[rgb(80,110,130)] text-white transition duration-200 ease-in-out appearance-none outline-none'
                                 style={{ fontFamily: 'plinko_m' }}
                             >
                                 <option value="low">Low</option>
@@ -83,7 +83,7 @@ const Sidebar = () => {
                         <div className='relative'>
                             <select
                                 id="rows"
-                                className='w-full h-10 p-2 mt-1 rounded bg-[#0F212E] border-2 border-[rgb(47,69,83)] focus:border-[rgb(80,110,130)] hover:border-[rgb(80,110,130)] text-white transition duration-200 ease-in-out appearance-none'
+                                className='w-full h-10 p-2 mt-1 rounded bg-[#0F212E] border-2 border-[rgb(47,69,83)] focus:border-[rgb(80,110,130)] hover:border-[rgb(80,110,130)] text-white transition duration-200 ease-in-out appearance-none outline-none'
                                 style={{ fontFamily: 'plinko_m' }}
                             >
                                 {Array.from({ length: 9 }, (_, i) => i + 8).map((value) => (
