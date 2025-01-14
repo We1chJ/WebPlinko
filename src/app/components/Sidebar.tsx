@@ -1,13 +1,15 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import React, { useState } from 'react'
+import { usePlinkoStore } from '../store'
 
 const Sidebar = () => {
-    const [amount, setAmount] = useState(0.00);
+    const [amount, setAmount] = useState(0);
+    const [invalid, setInvalid] = useState(false);
+    const setBetAmount = usePlinkoStore((state) => state.setBetAmount);
 
     return (
         <div className='w-full h-full p-3 flex flex-col items-center' style={{ fontFamily: 'plinko_m', backgroundColor: 'rgb(33,55,67)', color: 'white' }}>
@@ -20,6 +22,14 @@ const Sidebar = () => {
                     <div className='w-full'>
                         <Label htmlFor="amount" style={{ color: 'rgb(177, 186, 211)', fontFamily: 'plinko_m', fontWeight: 'bold' }}>Amount</Label>
                         <div className='relative mr-20'>
+                            {invalid && (
+                                <div className="absolute -top-6 left-5 transform -translate-y-full w-60 p-2 bg-white text-black text-sm rounded shadow-lg">
+                                    <div className="relative">
+                                        <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-t-8 border-t-white"></div>
+                                        Can't play more than your balance!
+                                    </div>
+                                </div>
+                            )}
                             <Input
                                 id="amount"
                                 type='number'
@@ -29,14 +39,15 @@ const Sidebar = () => {
                                 onChange={(e) => {
                                     const value = parseFloat(e.target.value);
                                     setAmount(isNaN(value) ? 0.00 : value);
-                                    // console.log(amount);
+                                    setInvalid(setBetAmount(value))
                                 }}
                                 onBlur={(e) => {
                                     const value = parseFloat(e.target.value);
                                     setAmount(isNaN(value) ? 0.00 : parseFloat(value.toFixed(2)));
                                     e.target.value = value.toFixed(2);
+                                    setInvalid(setBetAmount(parseFloat(value.toFixed(2))))
                                 }}
-                                className='pr-8 rounded-none'
+                                className={`pr-8 rounded-none ${invalid ? 'border-red-500 hover:border-red-500' : ''}`}
                             />
                             <svg fill="none" viewBox="0 0 96 96" className="svg-icon absolute right-3 top-3" style={{ width: '16px', height: '16px' }}>
                                 <title></title>
@@ -101,6 +112,7 @@ const Sidebar = () => {
                             id="bet-btn"
                             className="w-full h-14 text-black font-bold py-2 rounded transition duration-300 ease-in-out transform hover:bg-green-500 mt-4 text-lg"
                             style={{ backgroundColor: '#00ff00' }}
+                            disabled={invalid}
                         >
                             Bet
                         </button>

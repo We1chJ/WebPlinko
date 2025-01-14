@@ -1,7 +1,9 @@
 'use client'
 import React from 'react'
 import Image from 'next/image'
+import { usePlinkoStore } from '../store'
 const Header = () => {
+    const amount = usePlinkoStore((state) => state.balance);
     return (
         <div className="w-full h-full flex justify-center items-center shadow-lg shadow-b-lg" style={{ backgroundColor: 'rgb(26,44,56)', color: 'white', fontFamily: 'plinko_m' }}>
             <div className="flex absolute left-0 ml-4 text-3xl items-center" style={{ fontFamily: 'plinko_bold', fontWeight: 'bold' }}>
@@ -16,7 +18,7 @@ const Header = () => {
                     className='pr-8 bg-[#0F212E] text-white flex items-center justify-center rounded-l'
                     style={{ width: '140px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 >
-                    $0.00
+                    ${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </div>
                 <svg fill="none" viewBox="0 0 96 96" className="svg-icon absolute right-3 top-3" style={{ width: '16px', height: '16px' }}>
                     <title></title>
