@@ -329,4 +329,6 @@ export function initGame(container) {
             }
         }
     }
+
+    return game;
 }
