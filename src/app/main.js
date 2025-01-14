@@ -3,23 +3,6 @@ export function initGame(container) {
     const BASE_WIDTH = 1229;  // Minimum width
     const BASE_HEIGHT = 591;  // Minimum height
 
-    // Calculate the game scale and offset to center everything
-    function calculateScaleAndOffset() {
-        const containerWidth = container.clientWidth;
-        const containerHeight = container.clientHeight;
-
-        // Calculate available space
-        const scaleX = containerWidth / BASE_WIDTH;
-        const scaleY = containerHeight / BASE_HEIGHT;
-        const scale = Math.min(scaleX, scaleY);
-
-        // Calculate centering offsets
-        const offsetX = (containerWidth - (BASE_WIDTH * scale)) / 2;
-        const offsetY = (containerHeight - (BASE_HEIGHT * scale)) / 2;
-
-        return { scale, offsetX, offsetY };
-    }
-
     // Initialize game with base dimensions
     const config = {
         type: Phaser.AUTO,
@@ -105,7 +88,6 @@ export function initGame(container) {
     // Add resize handler
     window.addEventListener('resize', () => {
         if (game) {
-            // const { scale, offsetX, offsetY } = calculateScaleAndOffset();
             game.scale.setGameSize(BASE_WIDTH, BASE_HEIGHT);
             game.scale.refresh();
         }
@@ -159,7 +141,7 @@ export function initGame(container) {
                 obstacle.setBounce(0);
                 obstacle.body.collisionFilter.category = CATEGORY_OBSTACLE;
                 obstacle.body.collisionFilter.mask = CATEGORY_BALL;
-                obstacle.setOnCollide((pair) => {
+                obstacle.setOnCollide(() => {
                     // const ball = pair.bodyA.gameObject === obstacle ? pair.bodyB.gameObject : pair.bodyA.gameObject;
                     const shadowGraphics = this.add.graphics();
                     shadowGraphics.fillStyle(0xffffff, 0.5);
