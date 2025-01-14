@@ -5,3 +5,9 @@ This project is a clone of the famous online gambling game Plinko. It aims to mi
 This project serves two main purposes:
 1. Remind people the randomness in gambling, especially online ones!
 2. Enable me to practice js and game-making skills
+
+# Tech Stack
+- Game and Physics Engine: Phaser.js + Matter.js
+- Webpage Frontend + Backend: Nextjs
+- Styling: Tailwind CSS
+- Deployment: Vercel
