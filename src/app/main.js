@@ -121,7 +121,7 @@ export function initGame(container) {
         this.load.audio('mouseClick', '/assets/audio/mouseClick.mp3');
         this.load.audio('ballBounce', '/assets/audio/ballBounce.mp3');
         this.betButton = document.getElementById('bet-btn');
-        this.betButton.addEventListener('click', (e) => {
+        this.betButton.addEventListener('click', () => {
             this.sound.play('mouseClick', { volume: 3.0 });
             const ballGraphics = this.add.graphics();
             ballGraphics.fillStyle(0xff0000, 1);
@@ -160,7 +160,7 @@ export function initGame(container) {
                 obstacle.body.collisionFilter.category = CATEGORY_OBSTACLE;
                 obstacle.body.collisionFilter.mask = CATEGORY_BALL;
                 obstacle.setOnCollide((pair) => {
-                    const ball = pair.bodyA.gameObject === obstacle ? pair.bodyB.gameObject : pair.bodyA.gameObject;
+                    // const ball = pair.bodyA.gameObject === obstacle ? pair.bodyB.gameObject : pair.bodyA.gameObject;
                     const shadowGraphics = this.add.graphics();
                     shadowGraphics.fillStyle(0xffffff, 0.5);
                     shadowGraphics.fillCircle(OBSTACLE_RADIUS, OBSTACLE_RADIUS, OBSTACLE_RADIUS);
@@ -237,7 +237,7 @@ export function initGame(container) {
                     onComplete: () => {
                         multi.y = originalY;
                         scoreText.y = originalY;
-                        currentSounds = Math.max(0, currentSounds - 1);
+                        // currentSounds = Math.max(0, currentSounds - 1);
                         const multiplier = MULTI_CONFIG[i].multiplier;
                         const event = new CustomEvent('updateBalance', {
                             detail: {

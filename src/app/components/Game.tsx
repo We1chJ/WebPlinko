@@ -12,7 +12,6 @@ const Game = () => {
     const gameInstance = useRef<PhaserGame | null>(null);
 
     // Get the store methods
-    const balance = usePlinkoStore(state => state.balance);
     const changeBalance = usePlinkoStore(state => state.changeBalance);
 
     useEffect(() => {

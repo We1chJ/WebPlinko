@@ -7,6 +7,7 @@ import {
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import Footer from "./components/Footer";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Plinko No Gamble",
@@ -22,8 +23,14 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <div style={{ width: 0, height: 0, overflow: 'hidden', fontFamily: 'plinko_bold' }}>.</div>
-        <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
+        <Script
+          src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"
+          strategy="afterInteractive"
+        />
+        <Script
+          src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"
+          strategy="afterInteractive"
+        />
         <ResizablePanelGroup direction="vertical" style={{ height: '100vh' }}>
           <ResizablePanel defaultSize={10}><Header /></ResizablePanel>
           <ResizablePanel defaultSize={85}>

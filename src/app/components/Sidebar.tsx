@@ -31,7 +31,7 @@ const Sidebar = () => {
                                 <div className="absolute -top-6 left-5 transform -translate-y-full w-60 p-2 bg-white text-black text-sm rounded shadow-lg">
                                     <div className="relative">
                                         <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-t-8 border-t-white"></div>
-                                        Can't play more than your balance!
+                                        Can&apos;t play more than your balance!
                                     </div>
                                 </div>
                             )}
