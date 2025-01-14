@@ -95,11 +95,11 @@ export function initGame(container) {
 
     // Modify your existing functions to use BASE dimensions
     function preload() {
-        WebFont.load({
-            custom: {
-                families: ['plinko_bold', 'plinko_m'],
-            }
-        });
+        // WebFont.load({
+        //     custom: {
+        //         families: ['plinko_bold', 'plinko_m'],
+        //     }
+        // });
         this.load.audio('mouseClick', '/assets/audio/mouseClick.mp3');
         this.load.audio('ballBounce', '/assets/audio/ballBounce.mp3');
         this.betButton = document.getElementById('bet-btn');

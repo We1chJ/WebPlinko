@@ -25,11 +25,7 @@ export default function RootLayout({
         <div style={{ width: 0, height: 0, overflow: 'hidden', fontFamily: 'plinko_bold' }}>.</div>
         <Script
           src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"
-          strategy="afterInteractive"
-        />
-        <Script
-          src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"
-          strategy="afterInteractive"
+          strategy="beforeInteractive"
         />
         <ResizablePanelGroup direction="vertical" style={{ height: '100vh' }}>
           <ResizablePanel defaultSize={10}><Header /></ResizablePanel>
