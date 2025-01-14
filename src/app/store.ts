@@ -2,9 +2,8 @@ import { create } from "zustand";
 
 type PlinkoStore = {
     balance: number;
-    betAmount: number;
     setBalance: (balance: number) => void;
-    setBetAmount: (betAmount: number) => boolean;
+    changeBalance: (change: number) => void;
 };
 
 export const usePlinkoStore = create<PlinkoStore>((set, get) => ({
@@ -13,12 +12,7 @@ export const usePlinkoStore = create<PlinkoStore>((set, get) => ({
     setBalance: (balance: number) => {
         set({ balance });
     },
-    // return true if invalid, false otherwise
-    setBetAmount: (betAmount: number) => {
-        if (betAmount > get().balance) {
-            return true;
-        }
-        set({ betAmount });
-        return false;
-    }
+    changeBalance: (change: number) => {
+        set({ balance: get().balance + change })
+    },
 }));

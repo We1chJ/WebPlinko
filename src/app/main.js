@@ -137,6 +137,8 @@ export function initGame(container) {
             ball.setMass(1000);
             ball.body.collisionFilter.category = CATEGORY_BALL;
             ball.body.collisionFilter.mask = CATEGORY_OBSTACLE;
+            ball.setData('betAmount', document.getElementById('betAmount').value);
+            console.log('Bet Amount:', ball.getData('betAmount'));
         });
     }
 
@@ -217,6 +219,8 @@ export function initGame(container) {
             multi.setCollidesWith(CATEGORY_BALL);
             multi.setOnCollide((pair) => {
                 const ball = pair.bodyA.gameObject === multi ? pair.bodyB.gameObject : pair.bodyA.gameObject;
+                // read this first before getting destroyed
+                const betAmount = parseFloat(ball.getData('betAmount'));
                 ball.destroy();
                 if (currentSounds < maxSounds) {
                     this.sound.play('ballBounce', { volume: 1.0, detune: Phaser.Math.Between(-100, 200) });
@@ -234,9 +238,15 @@ export function initGame(container) {
                         multi.y = originalY;
                         scoreText.y = originalY;
                         currentSounds = Math.max(0, currentSounds - 1);
+                        const multiplier = MULTI_CONFIG[i].multiplier;
+                        const event = new CustomEvent('updateBalance', {
+                            detail: {
+                                changeAmount: parseFloat((betAmount * multiplier).toFixed(2))
+                            }
+                        });
+                        window.dispatchEvent(event);
                     }
                 });
-
                 multiHistory.push(i);
             });
         }

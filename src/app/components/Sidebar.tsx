@@ -3,13 +3,18 @@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { usePlinkoStore } from '../store'
 
 const Sidebar = () => {
     const [amount, setAmount] = useState(0);
     const [invalid, setInvalid] = useState(false);
-    const setBetAmount = usePlinkoStore((state) => state.setBetAmount);
+    const balance = usePlinkoStore((state) => state.balance);
+    const updateBalance = usePlinkoStore(state => state.changeBalance);
+
+    useEffect(() => {
+        setInvalid(balance < amount);
+    }, [balance, amount])
 
     return (
         <div className='w-full h-full p-3 flex flex-col items-center' style={{ fontFamily: 'plinko_m', backgroundColor: 'rgb(33,55,67)', color: 'white' }}>
@@ -31,7 +36,7 @@ const Sidebar = () => {
                                 </div>
                             )}
                             <Input
-                                id="amount"
+                                id="betAmount"
                                 type='number'
                                 step={0.01}
                                 placeholder={'0.00'}
@@ -39,13 +44,11 @@ const Sidebar = () => {
                                 onChange={(e) => {
                                     const value = parseFloat(e.target.value);
                                     setAmount(isNaN(value) ? 0.00 : value);
-                                    setInvalid(setBetAmount(value))
                                 }}
                                 onBlur={(e) => {
                                     const value = parseFloat(e.target.value);
                                     setAmount(isNaN(value) ? 0.00 : parseFloat(value.toFixed(2)));
                                     e.target.value = value.toFixed(2);
-                                    setInvalid(setBetAmount(parseFloat(value.toFixed(2))))
                                 }}
                                 className={`pr-8 rounded-none ${invalid ? 'border-red-500 hover:border-red-500' : ''}`}
                             />
@@ -113,6 +116,9 @@ const Sidebar = () => {
                             className="w-full h-14 text-black font-bold py-2 rounded transition duration-300 ease-in-out transform hover:bg-green-500 mt-4 text-lg"
                             style={{ backgroundColor: '#00ff00' }}
                             disabled={invalid}
+                            onClick={() => {
+                                updateBalance(-amount);
+                            }}
                         >
                             Bet
                         </button>
