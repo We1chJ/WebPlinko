@@ -105,7 +105,7 @@ export function initGame(container) {
     // Add resize handler
     window.addEventListener('resize', () => {
         if (game) {
-            const { scale, offsetX, offsetY } = calculateScaleAndOffset();
+            // const { scale, offsetX, offsetY } = calculateScaleAndOffset();
             game.scale.setGameSize(BASE_WIDTH, BASE_HEIGHT);
             game.scale.refresh();
         }
