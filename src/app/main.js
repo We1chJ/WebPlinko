@@ -79,8 +79,6 @@ export function initGame(container) {
     };
 
     const NUM_MULTIS = 17;
-    const maxSounds = 5;
-    let currentSounds = 0;
     let multiHistory = [];
     const maxHistoryDisplay = 4;
     let prevCnt = 0;
@@ -204,10 +202,7 @@ export function initGame(container) {
                 // read this first before getting destroyed
                 const betAmount = parseFloat(ball.getData('betAmount'));
                 ball.destroy();
-                if (currentSounds < maxSounds) {
-                    this.sound.play('ballBounce', { volume: 1.0, detune: Phaser.Math.Between(-100, 200) });
-                    currentSounds++;
-                }
+                this.sound.play('ballBounce', { volume: 1.0, detune: Phaser.Math.Between(-100, 200) });
                 const originalY = pos.y;
                 const targetY = Math.min(multi.y + 10, originalY + 10);
                 this.tweens.add({
@@ -219,7 +214,6 @@ export function initGame(container) {
                     onComplete: () => {
                         multi.y = originalY;
                         scoreText.y = originalY;
-                        // currentSounds = Math.max(0, currentSounds - 1);
                         const multiplier = MULTI_CONFIG[i].multiplier;
                         const event = new CustomEvent('updateBalance', {
                             detail: {
