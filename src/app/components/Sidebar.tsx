@@ -9,6 +9,7 @@ import { usePlinkoStore } from '../store'
 const Sidebar = () => {
     const [amount, setAmount] = useState(0);
     const [invalid, setInvalid] = useState(false);
+    const [zeroBetWarning, setZeroBetWarning] = useState(false);
     const balance = usePlinkoStore((state) => state.balance);
     const updateBalance = usePlinkoStore(state => state.changeBalance);
 
@@ -32,6 +33,14 @@ const Sidebar = () => {
                                     <div className="relative">
                                         <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-t-8 border-t-white"></div>
                                         Can&apos;t play more than your balance!
+                                    </div>
+                                </div>
+                            )}
+                            {zeroBetWarning && (
+                                <div className="absolute -top-6 left-5 transform -translate-y-full w-60 p-2 bg-white text-black text-sm rounded shadow-lg">
+                                    <div className="relative">
+                                        <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-t-8 border-t-white"></div>
+                                        Can&apos;t bet with amount 0!
                                     </div>
                                 </div>
                             )}
@@ -59,70 +68,41 @@ const Sidebar = () => {
                             </svg>
                             <button
                                 className="h-10 w-10 absolute top-0 -right-10 rounded-none transition duration-300 transform bg-[rgb(47,69,83)] hover:bg-[rgb(80,110,130)] flex items-center justify-center"
-                                onClick={() => setAmount((prevAmount) => parseFloat((prevAmount / 2).toFixed(2)))}
+                                onClick={() => setAmount((prevAmount) => {
+                                    const newAmount = parseFloat((prevAmount / 2).toFixed(2));
+                                    return newAmount < 0 ? 0 : newAmount;
+                                })}
                             >
                                 ½
                             </button>
                             <button
                                 className="h-10 w-10 absolute top-0 -right-20 rounded-tr rounded-br transition duration-300 transform bg-[rgb(47,69,83)] hover:bg-[rgb(80,110,130)] text-sm flex items-center justify-center"
-                                onClick={() => setAmount((prevAmount) => parseFloat((prevAmount * 2).toFixed(2)))}
+                                onClick={() => setAmount((prevAmount) => {
+                                    const newAmount = parseFloat((prevAmount * 2).toFixed(2));
+                                    return newAmount < 0 ? 0 : newAmount;
+                                })}
                             >
                                 2×
                             </button>
                             <div className="h-6 w-0.5 bg-[rgb(26,44,56)] absolute top-1/2 transform -translate-y-1/2 -right-10 rounded"></div>
                         </div>
                     </div>
-                    <div className='w-full'>
-                        <Label htmlFor="risk" style={{ color: 'rgb(177, 186, 211)', fontFamily: 'plinko_m' }}>Risk</Label>
-                        <div className='relative'>
-                            <select
-                                id="risk"
-                                className='w-full h-10 p-2 mt-1 rounded bg-[#0F212E] border-2 border-[rgb(47,69,83)] focus:border-[rgb(80,110,130)] hover:border-[rgb(80,110,130)] text-white transition duration-200 ease-in-out appearance-none outline-none'
-                                style={{ fontFamily: 'plinko_m' }}
-                            >
-                                <option value="low">Low</option>
-                                <option value="medium">Medium</option>
-                                <option value="high">High</option>
-                            </select>
-                            <div className="absolute right-0 flex items-center pr-3 pointer-events-none" style={{ top: '55%', transform: 'translateY(-50%)' }}>
-                                <svg fill="rgb(177, 186, 211)" viewBox="0 0 64 64" className="svg-icon" style={{ width: '15px', height: '15px' }}>
-                                    <title></title>
-                                    <path d="M32.271 49.763 9.201 26.692l6.928-6.93 16.145 16.145 16.144-16.144 6.93 6.929-23.072 23.07h-.005Z"></path>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                    <div className='w-full'>
-                        <Label htmlFor="rows" style={{ color: 'rgb(177, 186, 211)', fontFamily: 'plinko_m' }}>Rows</Label>
-                        <div className='relative'>
-                            <select
-                                id="rows"
-                                className='w-full h-10 p-2 mt-1 rounded bg-[#0F212E] border-2 border-[rgb(47,69,83)] focus:border-[rgb(80,110,130)] hover:border-[rgb(80,110,130)] text-white transition duration-200 ease-in-out appearance-none outline-none'
-                                style={{ fontFamily: 'plinko_m' }}
-                            >
-                                {Array.from({ length: 9 }, (_, i) => i + 8).map((value) => (
-                                    <option key={value} value={value}>{value}</option>
-                                ))}
-                            </select>
-                            <div className="absolute right-0 flex items-center pr-3 pointer-events-none" style={{ top: '55%', transform: 'translateY(-50%)' }}>
-                                <svg fill="rgb(177, 186, 211)" viewBox="0 0 64 64" className="svg-icon" style={{ width: '15px', height: '15px' }}>
-                                    <title></title>
-                                    <path d="M32.271 49.763 9.201 26.692l6.928-6.93 16.145 16.145 16.144-16.144 6.93 6.929-23.072 23.07h-.005Z"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        <button
-                            id="bet-btn"
-                            className="w-full h-14 text-black font-bold py-2 rounded transition duration-300 ease-in-out transform hover:bg-green-500 mt-4 text-lg"
-                            style={{ backgroundColor: '#00ff00' }}
-                            disabled={invalid}
-                            onClick={() => {
+                    <button
+                        id="bet-btn"
+                        className="w-full h-14 text-black font-bold py-2 rounded transition duration-300 ease-in-out transform hover:bg-green-500 mt-4 text-lg"
+                        style={{ backgroundColor: '#00ff00' }}
+                        disabled={invalid}
+                        onClick={() => {
+                            if (amount === 0) {
+                                setZeroBetWarning(true);
+                                setTimeout(() => setZeroBetWarning(false), 3000);
+                            } else {
                                 updateBalance(-amount);
-                            }}
-                        >
-                            Bet
-                        </button>
-                    </div>
+                            }
+                        }}
+                    >
+                        Bet
+                    </button>
                 </TabsContent>
                 <TabsContent value="auto">
                     Change your password here.

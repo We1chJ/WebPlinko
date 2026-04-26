@@ -102,6 +102,10 @@ export function initGame(container) {
         this.load.audio('ballBounce', '/assets/audio/ballBounce.mp3');
         this.betButton = document.getElementById('bet-btn');
         this.betButton.addEventListener('click', () => {
+            const betAmount = parseFloat(document.getElementById('betAmount').value);
+            if (betAmount === 0 || isNaN(betAmount)) {
+                return;
+            }
             this.sound.play('mouseClick', { volume: 3.0 });
             const ballGraphics = this.add.graphics();
             ballGraphics.fillStyle(0xff0000, 1);
@@ -117,7 +121,7 @@ export function initGame(container) {
             ball.setMass(1000);
             ball.body.collisionFilter.category = CATEGORY_BALL;
             ball.body.collisionFilter.mask = CATEGORY_OBSTACLE;
-            ball.setData('betAmount', document.getElementById('betAmount').value);
+            ball.setData('betAmount', betAmount);
             console.log('Bet Amount:', ball.getData('betAmount'));
         });
     }
