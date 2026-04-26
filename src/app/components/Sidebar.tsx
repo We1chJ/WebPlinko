@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react'
 import { usePlinkoStore } from '../store'
 
 const Sidebar = () => {
-    const [amount, setAmount] = useState(0);
+    const [amount, setAmount] = useState(10);
     const [invalid, setInvalid] = useState(false);
     const [zeroBetWarning, setZeroBetWarning] = useState(false);
     const balance = usePlinkoStore((state) => state.balance);

@@ -22,7 +22,6 @@ const Header = () => {
             changeBalance(selectedAmount);
             setShowPaymentModal(false);
             setShowNoGamblingModal(true);
-            setTimeout(() => setShowNoGamblingModal(false), 4000);
             setCardDetails({ name: '', number: '', expiry: '', cvc: '' });
             setSelectedAmount(null);
         }
@@ -213,16 +212,16 @@ const Header = () => {
             )}
 
             {showNoGamblingModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 animate-pulse">
-                    <div className="bg-gradient-to-b from-red-700 to-red-900 rounded-lg p-8 w-96 shadow-2xl text-center border-4 border-red-500 transform scale-105" style={{ fontFamily: 'plinko_m' }}>
-                        <div className="text-6xl mb-4 animate-bounce">🚫</div>
-                        <h2 className="text-white text-4xl font-bold mb-4 uppercase tracking-wider">NO GAMBLING</h2>
-                        <div className="bg-red-800 p-4 rounded mb-4 border-2 border-red-400">
-                            <p className="text-white text-lg font-bold">⚠️ DISCLAIMER</p>
-                            <p className="text-white text-sm mt-2">This is a demo project for educational purposes only.</p>
-                            <p className="text-white text-sm mt-2">Real gambling is prohibited and illegal in most jurisdictions.</p>
-                        </div>
-                        <p className="text-yellow-200 text-xs">If you or someone you know has a gambling problem, please seek help.</p>
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-blue-600 rounded-lg p-8 w-96 shadow-2xl text-center border-2 border-blue-400 relative" style={{ fontFamily: 'plinko_m' }}>
+                        <button
+                            onClick={() => setShowNoGamblingModal(false)}
+                            className="absolute top-3 right-3 text-white hover:text-gray-200 text-2xl w-8 h-8 flex items-center justify-center"
+                        >
+                            ✕
+                        </button>
+                        <h2 className="text-white text-4xl font-bold mb-6">Think again before gambling!!</h2>
+                        <p className="text-white text-lg">We will give you the money this time, but don't risk it in real gambling!</p>
                     </div>
                 </div>
             )}
