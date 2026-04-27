@@ -1,10 +1,23 @@
 'use client'
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Game from "./components/Game";
 
 export default function Home() {
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: '#0F212E' }}>
+        <Game />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: '#0F212E' }}>
