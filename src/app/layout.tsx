@@ -35,7 +35,7 @@ export default function RootLayout({
               <ResizablePanel defaultSize={80}>{children}</ResizablePanel>
             </ResizablePanelGroup>
           </ResizablePanel>
-          <ResizablePanel defaultSize={5}><Footer /></ResizablePanel>
+          <ResizablePanel defaultSize={7}><Footer /></ResizablePanel>
         </ResizablePanelGroup>
       </body>
     </html>
