@@ -1,3 +1,38 @@
+let gameSceneInstance = null;
+
+export function dropPlinko(betAmount) {
+    if (!gameSceneInstance) return;
+
+    const scene = gameSceneInstance;
+    const betAmountNum = parseFloat(betAmount);
+
+    if (betAmountNum === 0 || isNaN(betAmountNum)) {
+        return;
+    }
+
+    scene.sound.play('mouseClick', { volume: 3.0 });
+    const BALL_RADIUS = scene.BALL_RADIUS;
+    const BASE_WIDTH = scene.BASE_WIDTH;
+
+    const ballGraphics = scene.add.graphics();
+    ballGraphics.fillStyle(0xff0000, 1);
+    ballGraphics.fillCircle(BALL_RADIUS, BALL_RADIUS, BALL_RADIUS);
+    ballGraphics.generateTexture('ball', BALL_RADIUS * 2, BALL_RADIUS * 2);
+    ballGraphics.destroy();
+
+    const CATEGORY_BALL = 1;
+    const CATEGORY_OBSTACLE = 2;
+    const rand_x = Phaser.Math.Between(1, 20) * (Phaser.Math.Between(0, 1) ? 1 : -1);
+    const ball = scene.matter.add.image(BASE_WIDTH / 2 + rand_x, -10, 'ball');
+    ball.setCircle(BALL_RADIUS);
+    ball.setBounce(0.3);
+    ball.setDensity(10000);
+    ball.setMass(1000);
+    ball.body.collisionFilter.category = CATEGORY_BALL;
+    ball.body.collisionFilter.mask = CATEGORY_OBSTACLE;
+    ball.setData('betAmount', betAmountNum);
+}
+
 export function initGame(container) {
     // Fixed base dimensions - these will be our reference sizes
     const BASE_WIDTH = 1229;  // Minimum width
@@ -127,6 +162,9 @@ export function initGame(container) {
     }
 
     function create() {
+        gameSceneInstance = this;
+        this.BALL_RADIUS = BALL_RADIUS;
+        this.BASE_WIDTH = BASE_WIDTH;
         const graphics = this.add.graphics();
         graphics.fillStyle(0xffffff, 1);
         graphics.fillCircle(OBSTACLE_RADIUS, OBSTACLE_RADIUS, OBSTACLE_RADIUS);

@@ -18,7 +18,7 @@ const Header = () => {
     const paymentAmounts = [10, 25, 50, 100, 250, 500];
 
     const handlePayClick = () => {
-        if (selectedAmount && cardDetails.name && cardDetails.number && cardDetails.expiry && cardDetails.cvc) {
+        if (selectedAmount) {
             changeBalance(selectedAmount);
             setShowPaymentModal(false);
             setShowNoGamblingModal(true);
@@ -191,7 +191,7 @@ const Header = () => {
                                 </button>
                                 <button
                                     onClick={handlePayClick}
-                                    disabled={!selectedAmount || !cardDetails.name || !cardDetails.number || !cardDetails.expiry || !cardDetails.cvc}
+                                    disabled={!selectedAmount}
                                     className="flex-1 py-2 rounded bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-black font-bold transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-xs shadow-lg"
                                 >
                                     💰 Pay ${selectedAmount || '0'}
@@ -212,16 +212,31 @@ const Header = () => {
             )}
 
             {showNoGamblingModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-blue-600 rounded-lg p-8 w-96 shadow-2xl text-center border-2 border-blue-400 relative" style={{ fontFamily: 'plinko_m' }}>
+                <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+                    <div className="bg-gradient-to-b from-red-900 to-black rounded-lg p-8 w-96 shadow-2xl text-center border-4 border-red-700 relative" style={{ fontFamily: 'plinko_m' }} >
                         <button
                             onClick={() => setShowNoGamblingModal(false)}
-                            className="absolute top-3 right-3 text-white hover:text-gray-200 text-2xl w-8 h-8 flex items-center justify-center"
+                            className="absolute top-3 right-3 text-red-400 hover:text-red-200 text-2xl w-8 h-8 flex items-center justify-center"
                         >
                             ✕
                         </button>
-                        <h2 className="text-white text-4xl font-bold mb-6">Think again before gambling!!</h2>
-                        <p className="text-white text-lg">We will give you the money this time, but don't risk it in real gambling!</p>
+                        <div className="text-6xl mb-4">⚠️</div>
+                        <h2 className="text-white text-5xl font-black mb-4" style={{ textShadow: '0 0 20px rgba(255,0,0,0.5)' }}>WARNING</h2>
+                        <h3 className="text-red-400 text-2xl font-bold mb-6">GAMBLING DESTROYS LIVES</h3>
+                        <div className="border-t-2 border-red-700 pt-4 mb-4">
+                            <p className="text-red-200 text-lg font-bold mb-3">This money was FREE. Don't risk it.</p>
+                            <p className="text-white text-sm leading-relaxed mb-3">Real gambling can lead to:</p>
+                            <ul className="text-red-300 text-sm space-y-1 mb-4">
+                                <li>💸 Financial Ruin</li>
+                                <li>😔 Mental Health Crisis</li>
+                                <li>👥 Broken Relationships</li>
+                                <li>🏚️ Homelessness & Desperation</li>
+                            </ul>
+                        </div>
+                        <p className="text-yellow-300 text-xs font-bold mb-3 p-2 bg-red-950 rounded border border-yellow-600">
+                            If you're struggling with gambling, seek help immediately.
+                        </p>
+                        <p className="text-gray-300 text-xs">National Problem Gambling Helpline: 1-800-522-4700</p>
                     </div>
                 </div>
             )}
