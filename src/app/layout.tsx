@@ -1,12 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import {
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable"
-import Header from "./components/Header";
-import Sidebar from "./components/Sidebar";
-import Footer from "./components/Footer";
+import ResponsiveLayout from "./components/ResponsiveLayout";
 import Script from "next/script";
 
 export const metadata: Metadata = {
@@ -27,16 +21,7 @@ export default function RootLayout({
           src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"
           strategy="beforeInteractive"
         />
-        <ResizablePanelGroup direction="vertical" style={{ height: '100vh' }}>
-          <ResizablePanel defaultSize={10}><Header /></ResizablePanel>
-          <ResizablePanel defaultSize={85}>
-            <ResizablePanelGroup direction="horizontal" style={{ flex: 1 }}>
-              <ResizablePanel defaultSize={20}><Sidebar /></ResizablePanel>
-              <ResizablePanel defaultSize={80}>{children}</ResizablePanel>
-            </ResizablePanelGroup>
-          </ResizablePanel>
-          <ResizablePanel defaultSize={7}><Footer /></ResizablePanel>
-        </ResizablePanelGroup>
+        <ResponsiveLayout>{children}</ResponsiveLayout>
       </body>
     </html>
   );
