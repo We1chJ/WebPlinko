@@ -34,7 +34,7 @@ const Game = () => {
         };
     }, []);
 
-    return <div ref={gameRef} className="w-full h-full" />;
+    return <div ref={gameRef} style={{ width: '1229px', height: '591px' }} />;
 };
 
 export default Game;

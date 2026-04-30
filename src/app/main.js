@@ -47,8 +47,7 @@ export function initGame(container) {
         parent: container,
         resolution: window.devicePixelRatio,
         scale: {
-            mode: Phaser.Scale.FIT,
-            autoCenter: Phaser.Scale.CENTER_BOTH
+            mode: Phaser.Scale.NONE
         },
         scene: {
             preload: preload,
@@ -118,13 +117,6 @@ export function initGame(container) {
     const maxHistoryDisplay = 4;
     let prevCnt = 0;
 
-    // Add resize handler
-    window.addEventListener('resize', () => {
-        if (game) {
-            game.scale.setGameSize(BASE_WIDTH, BASE_HEIGHT);
-            game.scale.refresh();
-        }
-    });
 
     // Modify your existing functions to use BASE dimensions
     function preload() {
