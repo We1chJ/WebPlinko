@@ -13,10 +13,11 @@ const MOBILE_BREAKPOINT = 700;
 
 const Game = () => {
     const gameRef = useRef<HTMLDivElement>(null);
+    const wrapperRef = useRef<HTMLDivElement>(null);
     const gameInstance = useRef<PhaserGame | null>(null);
     const [scale, setScale] = useState(1);
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < MOBILE_BREAKPOINT;
 
-    // Get the store methods
     const changeBalance = usePlinkoStore(state => state.changeBalance);
 
     useEffect(() => {
@@ -27,7 +28,6 @@ const Game = () => {
             const customEvent = event as CustomEvent;
             const change = Number(customEvent.detail.changeAmount);
             changeBalance(change);
-            // console.log('Balance update event received');
         };
 
         window.addEventListener('updateBalance', handleBalanceUpdate as EventListener);
@@ -42,25 +42,51 @@ const Game = () => {
     }, []);
 
     useEffect(() => {
-        if (window.innerWidth < MOBILE_BREAKPOINT) {
-            const available = window.innerWidth - 16;
-            setScale(available / GAME_WIDTH);
-        }
+        const updateScale = () => {
+            if (!wrapperRef.current) return;
+            if (window.innerWidth < MOBILE_BREAKPOINT) {
+                // Scale by height to fill the container, crop sides
+                const availH = wrapperRef.current.clientHeight || window.innerHeight;
+                const scaleByH = availH / GAME_HEIGHT;
+                const scaleByW = window.innerWidth / GAME_WIDTH;
+                setScale(Math.max(scaleByH, scaleByW) * 0.85);
+            } else {
+                setScale(1);
+            }
+        };
+
+        updateScale();
+        window.addEventListener('resize', updateScale);
+        const observer = new ResizeObserver(updateScale);
+        if (wrapperRef.current) observer.observe(wrapperRef.current);
+
+        return () => {
+            window.removeEventListener('resize', updateScale);
+            observer.disconnect();
+        };
     }, []);
 
-    return (
-        <div style={{ width: GAME_WIDTH * scale, height: GAME_HEIGHT * scale, overflow: 'hidden' }}>
-            <div
-                ref={gameRef}
-                style={{
-                    width: `${GAME_WIDTH}px`,
-                    height: `${GAME_HEIGHT}px`,
-                    transformOrigin: 'top left',
-                    transform: `scale(${scale})`,
-                }}
-            />
-        </div>
-    );
+    if (isMobile) {
+        return (
+            <div ref={wrapperRef} style={{ width: '100%', height: '100%', overflow: 'hidden', position: 'relative', padding: '8px', boxSizing: 'border-box' }}>
+                <div
+                    ref={gameRef}
+                    style={{
+                        width: `${GAME_WIDTH}px`,
+                        height: `${GAME_HEIGHT}px`,
+                        transformOrigin: 'center center',
+                        transform: `scale(${scale})`,
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        translate: '-50% -50%',
+                    }}
+                />
+            </div>
+        );
+    }
+
+    return <div ref={gameRef} style={{ width: '1229px', height: '591px' }} />;
 };
 
 export default Game;
