@@ -9,7 +9,15 @@ export default function Home() {
 
   useEffect(() => {
     setMounted(true);
+    if (sessionStorage.getItem('disclaimerAccepted') === 'true') {
+      setDisclaimerAccepted(true);
+    }
   }, []);
+
+  const handleAcceptDisclaimer = () => {
+    setDisclaimerAccepted(true);
+    sessionStorage.setItem('disclaimerAccepted', 'true');
+  };
 
   if (!mounted) {
     return (
@@ -32,7 +40,7 @@ export default function Home() {
               This is a demo. No real money is involved. Don't gamble with real money.
             </p>
             <button
-              onClick={() => setDisclaimerAccepted(true)}
+              onClick={handleAcceptDisclaimer}
               className="bg-green-500 hover:bg-green-600 text-black font-bold py-2 px-6 rounded transition duration-300"
             >
               I Understand
